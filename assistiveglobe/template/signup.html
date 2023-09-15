@@ -1,0 +1,298 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Signup</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body style="background-image: url('/static/images/bg.jpg'); background-size: cover; background-repeat: no-repeat;"></body>
+<section class="ftco-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center mb-5">
+                <h1 class="mb-4"><a class="logo" href="#">AssistiveGlobe</a></h1>
+                <h2 class="heading-section">Sign Up</h2>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="login-wrap py-5">
+                    <div class="img d-flex align-items-center justify-content-center" style="background-image: url('/static/images/Logo.png');"></div>
+                    <h3 class="text-center mb-0">Welcome</h3>
+                    <form method="POST" class="login-form" id="signupForm" action="">
+
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <div class="icon d-flex align-items-center justify-content-center"><span class="fa fa-user"></span></div>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Name" onkeyup="validateName()">
+                            <span id="name-validation" class="invalid"></span>
+                        </div>
+                    
+                        <div class="form-group">
+                            <div class="icon d-flex align-items-center justify-content-center"><span class="fa fa-envelope"></span></div>
+                            <input type="email" class="form-control" name="email" id="email" placeholder="Email" onkeyup="validateEmail()">
+                            <span id="email-validation" class="invalid"></span>
+                        </div>
+                        
+
+                        <div class="form-group">
+                            <div class="icon d-flex align-items-center justify-content-center"><span class="fa fa-mobile"></span></div>
+                            <input type="tel" class="form-control" id="mobile" name="phone" placeholder="Mobile Number" onkeyup="validateMobile()">
+                            <span id="mobile-validation" class="invalid"></span>
+                        </div>
+                    
+                        <div class="form-group">
+                            <div class="icon d-flex align-items-center justify-content-center"><span class="fa fa-lock"></span></div>
+                            <input type="password" class="form-control" id="password" name="pass" placeholder="Password" onkeyup="validatePassword()">
+                            <span id="password-validation" class="invalid"></span>
+                            <div class="toggle-password">
+                                <i class="fa fa-eye" id="toggle-password-icon" onclick="togglePasswordVisibility()"></i>
+                            </div>
+                        </div>
+                    
+                        <div class="form-group">
+                            <div class="icon d-flex align-items-center justify-content-center"><span class="fa fa-lock"></span></div>
+                            <input type="password" class="form-control" name="pass" id="confirm_password" placeholder="Confirm Password" onkeyup="validateConfirmPassword()">
+                            <span id="confirm-password-validation" class="invalid" ></span>
+                        </div>
+                    
+                        <div class="form-group">
+                            <button type="submit" class="btn form-control btn-primary rounded submit px-3" id="signup-btn">Sign Up</button>
+                        </div>
+                        
+                    </form>
+                    
+                    <div class="social-login">
+                        <a href="#" class="google btn d-flex justify-content-center align-items-center" style="color: #eb7dbf;">
+                            <img src="{% static 'images/google.jpg' %}" alt="Google" class="mr-3" style="height: 20px;">
+                            Sign Up with Google
+                        </a>
+                    </div>
+                    
+
+                    <div class="w-100 text-center mt-4 text">
+                        <p class="mb-0">Already have an account?</p>
+                        <a href="{% url 'login' %}">Sign In</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/popper.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/main.js' %}"></script>
+
+
+
+<script>
+    // Validation functions
+
+    //Name valiadation
+    function validateName() {
+    var nameInput = document.getElementById("name");
+    var nameValidation = document.getElementById("name-validation");
+    var pattern = /^([A-Z][a-zA-Z\s]*){1,25}$/; // Each word starts with a capital letter, allow only letters and spaces, max 25 characters
+
+    if (nameInput.value === "") {
+        nameValidation.textContent = "Name cannot be blank!";
+        nameValidation.className = "invalid";
+    } else if (!pattern.test(nameInput.value)) {
+        nameValidation.textContent = "Invalid name format. Ensure each word starts with a capital letter and contains only letters and spaces.";
+        nameValidation.className = "invalid";
+    } else {
+        nameValidation.textContent = "Valid name.";
+        nameValidation.className = "valid";
+    }
+    updateSubmitButton();
+}
+
+
+
+
+
+    //Email validation
+    function validateEmail() {
+      var emailInput = document.getElementById("email");
+      var emailValidation = document.getElementById("email-validation");
+      var pattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+      if (emailInput.value === "") {
+         emailValidation.textContent = "Email is required!";
+         emailValidation.className = "invalid";
+      } else if (!pattern.test(emailInput.value)) {
+         emailValidation.textContent = "Please enter a valid email address!";
+         emailValidation.className = "invalid";
+      } else {
+         emailValidation.textContent = "Valid email.";
+         emailValidation.className = "valid";
+      }
+      updateSubmitButton();
+    }
+
+
+
+    //Mobile validation
+    function validateMobile() {
+        var mobileInput = document.getElementById("mobile");
+        var mobileValidation = document.getElementById("mobile-validation");
+        var pattern = /^[6-9]\d{9}$/;
+
+        if (mobileInput.value === "") {
+          mobileValidation.textContent = "Mobile number is required!";
+          mobileValidation.className = "invalid";
+        } else if (!pattern.test(mobileInput.value)) {
+          mobileValidation.textContent = "Please enter a valid 10-digit mobile number";
+          mobileValidation.className = "invalid";
+        } else {
+          mobileValidation.textContent = "Valid mobile number.";
+          mobileValidation.className = "valid";
+        }
+        updateSubmitButton();
+    }
+
+
+    //Password validation
+    function validatePassword() {
+        var passwordInput = document.getElementById("password");
+        var passwordValidation = document.getElementById("password-validation");
+        var pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
+
+        if (passwordInput.value === "") {
+          passwordValidation.textContent = "Password is required!";
+          passwordValidation.className = "invalid";
+        } else if (!pattern.test(passwordInput.value)) {
+          passwordValidation.textContent = "Password must have at least 8 characters, including uppercase and lowercase letters, numbers, and special characters.";
+          passwordValidation.className = "invalid";
+        } else {
+          passwordValidation.textContent = "Valid password format.";
+          passwordValidation.className = "valid";
+        }
+        updateSubmitButton();
+    }
+
+
+    //ConfirmPassword validation
+    function validateConfirmPassword() {
+        var passwordInput = document.getElementById("password");
+        var confirmPasswordInput = document.getElementById("confirm_password");
+        var confirmPasswordValidation = document.getElementById("confirm-password-validation");
+
+        if (confirmPasswordInput.value === "") {
+          confirmPasswordValidation.textContent = "Confirm Password is required!";
+          confirmPasswordValidation.className = "invalid";
+        } else if (confirmPasswordInput.value !== passwordInput.value) {
+          confirmPasswordValidation.textContent = "Passwords do not match!";
+          confirmPasswordValidation.className = "invalid";
+        } else {
+          confirmPasswordValidation.textContent = "Passwords match.";
+          confirmPasswordValidation.className = "valid";
+        }
+        updateSubmitButton();
+    }
+
+
+    // Update submit button state based on field validations
+    function updateSubmitButton() {
+        var invalidSpans = document.querySelectorAll(".invalid");
+        var submitButton = document.getElementById("signup-btn");
+        
+        if (invalidSpans.length === 0) {
+            submitButton.disabled = false;
+        } else {
+            submitButton.disabled = true;
+        }
+    }
+
+    // Form validation
+    function validateForm() {
+        validateName();
+        validateEmail();
+        validateMobile();
+        validatePassword();
+        validateConfirmPassword();
+        
+        var invalidSpans = document.querySelectorAll(".invalid");
+        if (invalidSpans.length > 0) {
+            alert("Please correct the highlighted fields.");
+            return false;
+        }
+        
+        return true; // Form is valid
+    }
+
+
+    // Toggle password visibility
+    function togglePasswordVisibility() {
+       var passwordInput = document.getElementById("password");
+       var toggleIcon = document.getElementById("toggle-password-icon");
+    
+       if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          toggleIcon.classList.remove("fa-eye");
+          toggleIcon.classList.add("fa-eye-slash");
+       } else {
+          passwordInput.type = "password";
+          toggleIcon.classList.remove("fa-eye-slash");
+          toggleIcon.classList.add("fa-eye");
+       }
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+ const alertType = urlParams.get('alert');
+if (alertType === 'email_already_existing') {
+ showAlert('Email  already exists', 'danger');
+ } else if (alertType === 'registered'){
+    showAlert('Registered Successfully', 'success');
+ } else if (alertType === 'missing_fields'){
+    showAlert('Please fill out all required fields', 'danger');
+ }
+ 
+ function showAlert(message, alertType) {
+ const alertDiv = document.createElement('div');
+alertDiv.classList.add('alert', `alert-${alertType}`, 'alert-top');
+alertDiv.textContent = message;
+
+ const container = document.querySelector('.container');
+ container.insertBefore(alertDiv, container.firstChild);
+
+ setTimeout(function() {
+ alertDiv.remove();
+ }, 5000); // Remove after 5 seconds
+ }
+
+</script>
+
+<style>
+    /* toggle css */
+    .toggle-password {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+    }
+    .alert-top {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 500px;
+        z-index: 1000;
+    }
+</style>
+
+
+
+</body>
+</html>

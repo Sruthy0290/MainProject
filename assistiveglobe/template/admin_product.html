@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+
+    <style>
+        .navbar-nav .nav-item {
+            margin-right: 10px;
+        }
+
+        .navbar-nav .btn {
+            margin-right: 10px;
+        }
+
+        .cart-total {
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .category-section {
+            margin-bottom: 40px;
+        }
+
+        .category-section h2 {
+            margin-bottom: 20px;
+        }
+
+        .product-table {
+            margin-top: 20px;
+        }
+
+        .product-table th,
+        .product-table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #d9534f;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #c9302c;
+        }
+    </style>
+
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="{% url 'admin_product' %}">AssistiveGlobe</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'home' %}">Home<span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+            <div class="form-inline my-2 my-lg-0">
+                <a href="{% url 'logout' %}" class="btn btn-warning mr-2">Logout</a>
+                <a href="{% url 'dashboard' %}" class="btn btn-warning">Dashboard</a>
+            </div>            
+        </div>
+    </nav>
+    <div>
+        <div class="container">
+            <div class="product-table">
+                <table class="table table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Category</th> 
+                            <th>Price</th>
+                            <th>Product ID</th> <!-- Added Product ID heading -->
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category, products in sorted_products.items %}
+                            {% for product in products %}
+                                <tr>
+                                    <td><img class="thumbnail" src="{{ product.imageURL }}" alt="{{ product.name }}"></td>
+                                    <td>{{ product.name }}</td>
+                                    <td>{{category}}</td>
+                                    <td>Rs {{ product.price|floatformat:2 }}</td>
+                                    <td>{{ product.id }}</td>
+                                    <td>
+                                        <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-success">View</a>
+                                        <a href="{% url 'update_product' product.id %}" class="btn btn-outline-secondary">Update</a>
+                                        <a href="{% url 'delete_product_confirm' product.id %}" class="button">Delete</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>

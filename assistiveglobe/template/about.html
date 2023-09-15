@@ -1,0 +1,187 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - AssistiveGlobe</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            background-color: #333;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            text-align: left;
+            margin-left: 20px;
+        }
+
+        .logo img {
+            max-height: 50px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+        }
+
+        li {
+            margin: 0 10px;
+        }
+
+        a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+       
+        .about-section {
+            background-color: #f9f9f9;
+            padding: 50px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap-reverse; /* Reverse the wrap direction */
+        }
+
+
+        .about-content {
+            flex-basis: calc(50% - 20px); /* Take up 50% of the available space, minus some margin */
+            margin-left: 20px; /* Add some margin between content and images */
+        }
+
+        .about-text {
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+
+        .about-images {
+            float: right;
+            max-width: 50%; /* Adjust the width as needed */
+        }
+
+        .about-images img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin-bottom: 20px;
+            margin-right: auto;
+        }
+
+        .product-section {
+            padding: 50px 0;
+            text-align: center;
+        }
+
+        .product-list {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .product-item {
+            max-width: 300px;
+            margin: 20px;
+            text-align: left;
+        }
+
+        .product-item img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            margin-bottom: 30px;
+            font-size: 2em;
+            color: #333;
+        }
+
+        h3 {
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        p {
+            font-size: 1em;
+            color: #555;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="logo">
+            <img src="{% static 'images/Logo.png' %}" alt="Logo">
+        </div>
+        <ul>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'product' %}">Products</a></li>
+        </ul>
+    </nav>
+
+    <section class="about-section">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>About Us</h2>
+                    <p>Welcome to AssistiveGlobe, a platform committed to making a positive impact on the lives of individuals with diverse abilities. We believe that everyone deserves equal access to information, opportunities, and experiences, regardless of their unique needs.</p>
+                    <p>Our Mission
+                        At AssistiveGlobe, our mission is to create an inclusive and accessible digital environment for all. We strive to empower individuals with diverse abilities by providing innovative tools, resources, and support.</p>
+                </div>
+            </div>
+        </div>
+        <div class="about-images">
+            <img src="{% static 'images/about.jpg' %}" alt="About Image ">
+        </div>
+    </section>
+    
+
+    <section class="product-section">
+        <div class="container">
+            <h2>Our Products</h2>
+            <div class="product-list">
+                <div class="product-item">
+                    <img src="{% static 'images/electric.jpg' %}" alt="Product 1">
+                    <h3>Product Name 1</h3>
+                    <p>[Provide a detailed description of your first product. Include its key features, benefits, and how it addresses a specific need or problem.]</p>
+                </div>
+                <div class="product-item">
+                    <img src="{% static 'images/walker.jpg' %}" alt="Product 2">
+                    <h3>Product Name 2</h3>
+                    <p>[Provide a detailed description of your second product. Include its key features, benefits, and how it complements or extends the offerings of the first product.]</p>
+                </div>
+                <!-- Add more product items as needed -->
+            </div>
+        </div>
+    </section>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+
+</html>
+
+
+
+
+
+
