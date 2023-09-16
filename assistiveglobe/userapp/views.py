@@ -171,8 +171,6 @@ def product_detail(request, product_id):
     product = Product.objects.get(pk=product_id)
     return render(request, 'product_detail.html', {'product': product})
 
-
-
 def cart(request):
     if request.user.is_authenticated:
         user = request.user

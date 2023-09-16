@@ -168,3 +168,4 @@ class CartItem(models.Model):
         return f'{self.quantity} x {self.product.name} in {self.cart.user.username}\'s cart'
 
 sorted_products = {category[0]: Product.objects.filter(category=category[0]) for category in CATEGORY_CHOICES}
+

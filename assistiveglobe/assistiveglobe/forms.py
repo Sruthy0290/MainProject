@@ -17,6 +17,7 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ['category', 'name', 'price', 'description', 'image']
+        
 
 class ProductUpdateForm(forms.ModelForm):
     category = forms.ChoiceField(choices=CATEGORY_CHOICES)

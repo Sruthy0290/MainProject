@@ -104,6 +104,19 @@
             border-radius: 4px;
             cursor: pointer;
         }
+        .form-container textarea {
+            height: 150px; /* Set the height as per your preference */
+            resize: vertical;
+            width: calc(100% - 20px);
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .custom-fields {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -155,6 +168,7 @@
                 sidebar.classList.toggle('active');
             }
             
+            
             function validateForm() {
                 // Validate product name (Capitalized, spaces allowed)
                 var nameInput = document.getElementById('id_name');
@@ -172,13 +186,14 @@
                     return false;
                 }
         
-                // Validate description (Capitalized, numbers allowed, not more than 500 words)
+                // Validate description (Capitalized, numbers allowed, less than or equal to 500 characters)
                 var descriptionInput = document.getElementById('id_description');
                 var descriptionValue = descriptionInput.value.trim();
                 if (!/^[A-Z0-9\s]{1,500}$/.test(descriptionValue)) {
                     alert('Description should start with a capital letter, can contain numbers, and be up to 500 characters.');
                     return false;
                 }
+
         
                 // Validate image format (Optional, assuming you want to check the file extension)
                 var imageInput = document.getElementById('id_image');
