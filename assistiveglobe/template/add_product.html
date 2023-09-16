@@ -149,42 +149,50 @@
             </form>
         </div>
         
-
-    <script>
-        function toggleSidebar() {
-            var sidebar = document.querySelector('.sidebar');
-            sidebar.classList.toggle('active');
-        }
-        function validateForm() {
-        // Validate product name (Capitalized)
-        var nameInput = document.getElementById('id_name');
-        var nameValue = nameInput.value;
-        if (!/^[A-Z][a-z]*$/.test(nameValue)) {
-            alert('Product name should start with a capital letter and use only lowercase letters.');
-            return false;
-        }
-
-        // Validate price (Positive number)
-        var priceInput = document.getElementById('id_price');
-        var priceValue = parseFloat(priceInput.value);
-        if (isNaN(priceValue) || priceValue <= 0) {
-            alert('Price should be a positive number greater than zero.');
-            return false;
-        }
-
-        // Validate image format (Optional, assuming you want to check the file extension)
-        var imageInput = document.getElementById('id_image');
-        var imageValue = imageInput.value;
-        var validExtensions = ['jpg', 'jpeg', 'png', 'gif']; // Add more if needed
-        var extension = imageValue.split('.').pop().toLowerCase();
-        if (validExtensions.indexOf(extension) === -1) {
-            alert('Invalid image format. Supported formats: ' + validExtensions.join(', '));
-            return false;
-        }
-
-        return true; // Form is valid
-    }
-</script>
+        <script>
+            function toggleSidebar() {
+                var sidebar = document.querySelector('.sidebar');
+                sidebar.classList.toggle('active');
+            }
+            
+            function validateForm() {
+                // Validate product name (Capitalized, spaces allowed)
+                var nameInput = document.getElementById('id_name');
+                var nameValue = nameInput.value.trim();
+                if (!/^[A-Z][a-zA-Z\s]*$/.test(nameValue)) {
+                    alert('Product name should start with a capital letter and can contain letters and spaces.');
+                    return false;
+                }
+        
+                // Validate price (Positive number)
+                var priceInput = document.getElementById('id_price');
+                var priceValue = parseFloat(priceInput.value);
+                if (isNaN(priceValue) || priceValue <= 0) {
+                    alert('Price should be a positive number greater than zero.');
+                    return false;
+                }
+        
+                // Validate description (Capitalized, numbers allowed, not more than 500 words)
+                var descriptionInput = document.getElementById('id_description');
+                var descriptionValue = descriptionInput.value.trim();
+                if (!/^[A-Z0-9\s]{1,500}$/.test(descriptionValue)) {
+                    alert('Description should start with a capital letter, can contain numbers, and be up to 500 characters.');
+                    return false;
+                }
+        
+                // Validate image format (Optional, assuming you want to check the file extension)
+                var imageInput = document.getElementById('id_image');
+                var imageValue = imageInput.value;
+                var validExtensions = ['jpg', 'jpeg', 'png', 'gif']; // Add more if needed
+                var extension = imageValue.split('.').pop().toLowerCase();
+                if (validExtensions.indexOf(extension) === -1) {
+                    alert('Invalid image format. Supported formats: ' + validExtensions.join(', '));
+                    return false;
+                }
+        
+                return true; // Form is valid
+            }
+        </script>
     
 </body>
 </html>
