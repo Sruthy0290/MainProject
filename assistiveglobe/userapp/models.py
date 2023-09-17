@@ -69,11 +69,9 @@ class CustomUser(AbstractUser):
     def has_module_perms(self, app_label):
         return True
     
-# class Category(models.Model):
-#     name = models.CharField(max_length=100)
-
-#     def __str__(self):
-#         return self.name
+    def __str__(self):
+        return self.name
+    
 
 CATEGORY_CHOICES = [
     ('Wheelchair', 'Wheelchair'),
@@ -168,4 +166,5 @@ class CartItem(models.Model):
         return f'{self.quantity} x {self.product.name} in {self.cart.user.username}\'s cart'
 
 sorted_products = {category[0]: Product.objects.filter(category=category[0]) for category in CATEGORY_CHOICES}
+
 

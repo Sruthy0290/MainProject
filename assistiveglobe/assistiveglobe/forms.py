@@ -35,5 +35,3 @@ class DeleteProductForm(forms.Form):
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
 
-
-    

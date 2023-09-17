@@ -105,7 +105,7 @@
                                     <td>{{ product.id }}</td>
                                     <td>
                                         <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-success">View</a>
-                                        <a href="{% url 'update_product' product.id %}" class="btn btn-outline-secondary">Update</a>
+                                        <a href="{% url 'edit_product' product.id %}" class="btn btn-outline-secondary">Edit</a>
                                         <a href="{% url 'delete_product_confirm' product.id %}" class="button">Delete</a>
                                     </td>
                                 </tr>

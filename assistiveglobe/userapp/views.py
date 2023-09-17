@@ -141,7 +141,12 @@ def dashboard(request):
         'total_revenue': total_revenue,
         'total_orders': total_orders,
     }
+    recent_users = User.objects.order_by('-id')[:5]  # Get the 5 most recent users
+    context = {
+        'recent_users': recent_users
+    }
     return render(request, 'dashboard.html', context)
+    
 
 
 # admin
@@ -224,7 +229,7 @@ def delete_product(request, product_id):
 
 
 # admin
-def update_product(request, product_id):
+def edit_product(request, product_id):
     product = Product.objects.get(pk=product_id)
     if request.method == 'POST':
         form = ProductUpdateForm(request.POST, request.FILES, instance=product)
@@ -235,6 +240,12 @@ def update_product(request, product_id):
         form = ProductUpdateForm(instance=product)
     
     return render(request, 'update_product.html', {'form': form, 'admin_product': product})
+
+
+from django.http import JsonResponse
+
+def updateItem(request):
+    return JsonResponse('Product was added', safe=False)
 
 
 
