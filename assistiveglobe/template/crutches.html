@@ -39,6 +39,7 @@
             background-color: #fff;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             margin-bottom: 20px;
+            height: 100%;
         }
 
         .product img {
@@ -60,6 +61,7 @@
         .product .btn {
             margin-right: 10px;
         }
+
         .thumbnail img {
             max-width: 100%;
             height: auto;
@@ -70,8 +72,7 @@
 
 </head>
 <body>
-
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+ <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <a class="navbar-brand" href="{% url 'product' %}">AssistiveGlobe</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -85,27 +86,23 @@
         </ul>
         <div class="form-inline my-2 my-lg-0">
             {% if user.is_authenticated %}
-                <!-- Show this button only if the user is logged in -->
                 <a href="{% url 'logout' %}" class="btn btn-warning">Logout</a>
             {% else %}
-            
-                <!-- Show this button only if the user is not logged in -->
                 <a href="{% url 'login' %}" class="btn btn-warning">Login</a>
             {% endif %}
 
             {% if user.is_superuser %}
-                <!-- Show this button only to superusers -->
                 <a href="{% url 'dashboard' %}" class="btn btn-warning">Dashboard</a>
             {% else %}
-                <!-- Show these links to regular customers -->
                 <a href="{% url 'cart' %}">
-                    <img  id="cart-icon" src="{% static 'images/cart.png' %}">
+                    <img id="cart-icon" src="{% static 'images/cart.png' %}">
                 </a>
                 <p id="cart-total" class="btn btn-outline-secondary">0</p>
             {% endif %}
         </div>
       </div>
     </nav>
+
     <div>
         {% block content %}
         <div class="container">
@@ -114,13 +111,12 @@
                 <div class="row">
                     {% for product in sorted_products.Wheelchair %}
                     <div class="col-lg-4">
-                        <img class="thumbnail" src="{{ product.imageURL }}">
                         <div class="box-element product">
+                            <img class="thumbnail" src="{{ product.imageURL }}">
                             <h6><strong>{{ product.name }}</strong></h6>
                             <hr>
                             <div style="float: left;">
                                 {% if user.is_superuser %}
-                                    <!-- Show this button only to superusers -->
                                     <button class="btn btn-outline-secondary add-btn">
                                         <a href="{% url 'cart' %}">Add to Cart</a>
                                     </button>
@@ -132,7 +128,6 @@
                                         <a href="{% url 'delete_product' product.id %}" class="btn btn-danger">Delete</a>
                                     </button>
                                 {% else %}
-                                    <!-- Show these links to regular customers -->
                                     <button class="btn btn-outline-secondary add-btn">
                                         <a href="{% url 'cart' %}">Add to Cart</a>
                                     </button>
@@ -142,14 +137,14 @@
                             <div style="float: right;">
                                 <h4 style="display: inline-block;"><strong>Rs {{ product.price|floatformat:2 }}</strong></h4>
                             </div>
-                            <div style="clear: both;"></div> <!-- Clear the floats -->
+                            <div style="clear: both;"></div>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
             </section>
         </div>
-    {% endblock content %}
+        {% endblock content %}
     </div>
 
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>

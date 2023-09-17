@@ -239,12 +239,12 @@ def edit_product(request, product_id):
     else:
         form = ProductUpdateForm(instance=product)
     
-    return render(request, 'update_product.html', {'form': form, 'admin_product': product})
+    return render(request, 'edit_product.html', {'form': form, 'admin_product': product})
 
 
 from django.http import JsonResponse
 
-def updateItem(request):
+def update_product(request):
     return JsonResponse('Product was added', safe=False)
 
 

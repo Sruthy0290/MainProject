@@ -170,13 +170,13 @@
             
             
             function validateForm() {
-                // Validate product name (Capitalized, spaces allowed)
-                var nameInput = document.getElementById('id_name');
-                var nameValue = nameInput.value.trim();
-                if (!/^[A-Z][a-zA-Z\s]*$/.test(nameValue)) {
-                    alert('Product name should start with a capital letter and can contain letters and spaces.');
-                    return false;
-                }
+                // // Validate product name (Capitalized, spaces allowed)
+                // var nameInput = document.getElementById('id_name');
+                // var nameValue = nameInput.value.trim();
+                // if (!/^[A-Z][a-zA-Z\s]*$/.test(nameValue)) {
+                //     alert('Product name should start with a capital letter and can contain letters and spaces.');
+                //     return false;
+                // }
         
                 // Validate price (Positive number)
                 var priceInput = document.getElementById('id_price');
@@ -186,14 +186,13 @@
                     return false;
                 }
         
-                // Validate description (Capitalized, numbers allowed, less than or equal to 500 characters)
-                var descriptionInput = document.getElementById('id_description');
-                var descriptionValue = descriptionInput.value.trim();
-                if (!/^[A-Z0-9\s]{1,500}$/.test(descriptionValue)) {
-                    alert('Description should start with a capital letter, can contain numbers, and be up to 500 characters.');
-                    return false;
-                }
-
+                // // Validate description (Capitalized, numbers allowed)
+                // var descriptionInput = document.getElementById('id_description');
+                // var descriptionValue = descriptionInput.value.trim();
+                // if (!/^[A-Z][A-Z0-9\s]*$/.test(descriptionValue)) {
+                //     alert('Description should start with a capital letter and can contain numbers or spaces.');
+                //     return false;
+                // }
         
                 // Validate image format (Optional, assuming you want to check the file extension)
                 var imageInput = document.getElementById('id_image');
