@@ -157,12 +157,29 @@
                 <p>Total orders: {{ total_orders }}</p>
             </div>
             <div class="card">
-                <h2>Recent Users</h2>
-                <ul class="user-list">
-                    {% for user in recent_users %}
-                        <li>{{ user.username }}</li>
-                    {% endfor %}
-                </ul>
+                <h2>Newly Registered Users</h2>
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <!-- <th>Password</th> -->
+                            <th>Phone Number</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in recent_users %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.email }}</td>
+                                <!-- <td>{{ user.password }}</td> -->
+                                <td>{{ user.phone }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
     
             <!-- Product Management Table -->
