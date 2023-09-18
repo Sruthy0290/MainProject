@@ -144,7 +144,7 @@
     <div class="content">
         <div class="sidebar">
             <a href="{% url 'dashboard' %}">Dashboard</a>
-            <a href="#">Users</a>
+            <a href="{% url 'user_detail' %}">Users</a>
             <a href="{% url 'admin_product' %}">Products</a>
             <a href="{% url 'add_product' %}">Add Product</a>
             <a href="#">Settings</a>
@@ -181,7 +181,33 @@
                     </tbody>
                 </table>
             </div>
-    
+
+            <!-- <div class="card">
+                <h2>Recent Users</h2>
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Password</th>
+                            <th>Phone Number</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in recent_users %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.password }}</td>
+                                <td>{{ user.phone }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+     -->
             <!-- Product Management Table -->
             <h2>Product Management</h2>
             <table>

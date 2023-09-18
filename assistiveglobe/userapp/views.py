@@ -73,8 +73,7 @@ def login(request):
 
         else:
             return HttpResponseRedirect(reverse('login') + '?alert=missing_fields')
-
-                
+             
     return render(request, 'login.html')
 
 
@@ -148,6 +147,15 @@ def dashboard(request):
     return render(request, 'dashboard.html', context)
     
 
+def user_detail(request):
+    # Assuming you want to fetch all users for this view
+    users = CustomUser.objects.all()
+
+    context = {
+        'users': users
+    }
+
+    return render(request, 'user_detail.html', context)
 
 # admin
 def admin_product(request):
@@ -242,10 +250,20 @@ def edit_product(request, product_id):
     return render(request, 'edit_product.html', {'form': form, 'admin_product': product})
 
 
-from django.http import JsonResponse
+# from django.http import JsonResponse
 
-def update_product(request):
-    return JsonResponse('Product was added', safe=False)
+# def update_product(request):
+#     return JsonResponse('Product was added', safe=False)
 
+
+# from django.contrib.auth.views import LoginView
+# from django.utils import timezone
+
+# class CustomLoginView(LoginView):
+#     def form_valid(self, form):
+#         response = super().form_valid(form)
+#         self.user.last_logged_in = timezone.now()
+#         self.user.save()
+#         return response
 
 

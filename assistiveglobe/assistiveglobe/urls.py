@@ -34,6 +34,7 @@ urlpatterns = [
     path('product/<int:product_id>/', v.product_detail, name='product_detail'),    
     path('cart/',v.cart,name='cart'),
     path('dashboard/',v.dashboard,name='dashboard'),
+    path('user_detail/',v.user_detail, name='user_detail'),
     path('add_product/', v.add_product, name='add_product'),
     path('delete_product/<int:product_id>/', v.delete_product, name='delete_product'), 
     path('delete_product_confirm/<int:product_id>/',delete_product_confirm, name='delete_product_confirm'),  
@@ -42,6 +43,7 @@ urlpatterns = [
     path('wheelchair/', v.wheelchair, name='wheelchair'),
     path('walker/', v.walker, name='walker'),
     path('crutches/', v.crutches, name='crutches'),
+   
     
 ]+static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)
 
