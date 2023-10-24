@@ -1,4 +1,6 @@
 {% load static %}
+
+{% load socialaccount %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -70,9 +72,9 @@
                     </form>
                     
                     <div class="social-login">
-                        <a href="#" class="google btn d-flex justify-content-center align-items-center" style="color: #eb7dbf;">
+                        <a href="{% provider_login_url 'google'%}?next=/" class="google btn d-flex justify-content-center align-items-center" style="color: #eb7dbf;">
                             <img src="{% static 'images/google.jpg' %}" alt="Google" class="mr-3" style="height: 20px;">
-                            Sign Up with Google
+                            SignUp  with Google
                         </a>
                     </div>
                     

@@ -49,7 +49,10 @@ class CustomUser(AbstractUser):
     phone = models.CharField(max_length=12, blank=True)
     password = models.CharField(max_length=128)
     role = models.PositiveSmallIntegerField(choices=ROLE_CHOICE, blank=True, null=True,default='1')
+    is_blocked = models.BooleanField(default=False)
     
+
+   
 
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -60,6 +63,8 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = ['name', 'phone']
 
     objects = UserManager()
+
+
 
     def __str__(self):
         return self.name
@@ -72,7 +77,7 @@ class CustomUser(AbstractUser):
     
     def __str__(self):
         return self.name
-   
+
     
 
 CATEGORY_CHOICES = [
@@ -89,6 +94,7 @@ class Product(models.Model):
     price = models.FloatField()
     description = models.CharField(max_length=500)
     image = models.ImageField(null=True, blank=True)
+    stock = models.PositiveIntegerField(default=0)
     
 
     @property
@@ -99,7 +105,13 @@ class Product(models.Model):
             url = ''
         return url
     
+    
+class WishlistItem(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f'{self.user.username} - {self.product.name}'
 
 
 class Order(models.Model):
@@ -107,10 +119,15 @@ class Order(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
     date_ordered = models.DateTimeField(auto_now_add=True)
     complete = models.BooleanField(default=False)
-    transaction_id = models.CharField(max_length=100, null=True)
+    transaction_id = models.CharField(max_length=100, null=True, blank=True)
+    razorpay_order_id = models.CharField(max_length=100, null=True)
+    
+
 
     def __str__(self):
         return str(self.id)  
+
+    
 
     @property
     def get_cart_total(self):
@@ -124,6 +141,9 @@ class Order(models.Model):
         orderitems = self.orderitem_set.all()
         total = sum([item.quantity for item in orderitems])
         return total  
+
+
+
     
 
 class OrderItem(models.Model):
@@ -137,37 +157,49 @@ class OrderItem(models.Model):
         total = self.product.price * self.quantity
         return total 
 
+    @property
+    def imageURL(self):
+        try:
+            url = self.image.url
+        except:
+            url = ''
+        return url
+    
+
+from django.db import models
+from django.contrib.auth.models import User
 
 class ShippingAddress(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL,null=True)
-    order = models.ForeignKey(Order, on_delete=models.SET_NULL,null=True)
-    address = models.CharField(max_length=200,null=False)
-    city = models.CharField(max_length=200,null=False)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='shipping_addresses', default=1)  # Replace '1' with the ID of the default user
+    name = models.CharField(max_length=200, null=True)
+    address = models.CharField(max_length=200, null=False)
+    phone = models.CharField(max_length=15, null=True)
+    city = models.CharField(max_length=200, null=False)
+    zipcode = models.CharField(max_length=10, null=False)
+    district = models.CharField(max_length=100, null=True)
     state = models.CharField(max_length=200, null=False)
-    zipcode = models.CharField(max_length=200, null=False)
+    landmark = models.CharField(max_length=200, null=True, blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
 
-
     def __str__(self):
-        return self.address
+        return f"{self.name} - {self.address}, {self.city}, {self.state}"
+
+
         
-class Cart(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f'Cart for {self.user.username}'
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
+    
 
     def __str__(self):
-        return f'{self.quantity} x {self.product.name} in {self.cart.user.username}\'s cart'
+        return f'{self.quantity} x {self.product.name} in {self.user.username}\'s cart'
 
 
 sorted_products = {category[0]: Product.objects.filter(category=category[0]) for category in CATEGORY_CHOICES}
+
+
 
 

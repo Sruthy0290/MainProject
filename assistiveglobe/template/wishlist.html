@@ -1,0 +1,70 @@
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="{% url 'home' %}">Home</a>
+    <a class="navbar-brand" href="{% url 'product' %}">Product</a>
+    <a class="navbar-brand" href="{% url 'cart' %}">Cart</a>
+    <a class="navbar-brand" href="{% url 'wishlist' %}">Wishlist</a>
+</nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="mb-0">Your Wishlist</h2>
+                    </div>
+                    <div class="card-body">
+                        {% if wishlist_items %}
+                            <ul class="list-group">
+                                {% for item in wishlist_items %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="mr-3" style="max-height: 50px;">
+                                            {{ item.product.name }}
+                                        </div>
+                                        <span class="badge badge-primary badge-pill">Rs {{ item.product.price|floatformat:2 }}</span>
+                                        <button type="button" class="btn btn-danger btn-sm remove-button" data-product-id="{{ item.product.id }}">Remove</button>
+
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-center">Your wishlist is empty.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const removeButtons = document.querySelectorAll('.remove-button');
+            removeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.dataset.productId;
+                    removeProductFromWishlist(productId);
+                });
+            });
+
+            function removeProductFromWishlist(productId) {
+                fetch(`/remove_from_wishlist/${productId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.reload(); // Reload the page after successful removal
+                        } else {
+                            console.error('Error removing product from wishlist:', data.error);
+                        }
+                    })
+                    .catch(error => console.error('Error removing product from wishlist:', error));
+            }
+        });
+    </script>
+{% endblock %}
+

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +14,7 @@
         }
 
         .navbar {
-            background-color: #6acbe6;
+            background-color: #343a40;
             color: #fff;
             padding: 10px 20px;
             text-align: center;
@@ -63,28 +64,57 @@
             background-color: #f2f2f2;
         }
 
-        .user-table th:first-child, .user-table td:first-child {
-            font-weight: bold;
-        }
-
         .user-table th:nth-child(n+2), .user-table td:nth-child(n+2) {
             text-align: center;
         }
 
-        h2 {
-            margin-bottom: 10px;
+        .user-table th:first-child, .user-table td:first-child {
+            font-weight: bold;
+        }
+
+        .action-button {
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .block-button {
+            background-color: #ff4d4d;
+            color: #fff;
+            border: 1px solid #ff4d4d;
+        }
+
+        .block-button:hover {
+            background-color: #ff6666;
+            border: 1px solid #ff6666;
+        }
+
+        .unblock-button {
+            background-color: #1fd169;
+            color: #fff;
+            border: 1px solid #1fd169;
+        }
+
+        .unblock-button:hover {
+            background-color: #24e57f;
+            border: 1px solid #24e57f;
         }
     </style>
 </head>
 <body>
 
     <div class="navbar">
-        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'dashboard' %}">Admin Panel</a>
         <h1>User Details</h1>
+        <div class="form-inline my-2 my-lg-0">
+            <a href="{% url 'logout' %}" class="btn btn-warning mr-2">Logout</a>
+        </div>       
     </div>
 
     <div class="card">
-        <!-- <h2>User Details</h2> -->
+        <!-- User Details Table -->
         <table class="user-table">
             <thead>
                 <tr>
@@ -92,22 +122,32 @@
                     <th>Name</th>
                     <th>Email</th>
                     <th>Phone Number</th>
-                    <th>Registered Date</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% for user in users %}
+                    {% if not user.is_superuser %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ user.name }}</td>
                         <td>{{ user.email }}</td>
                         <td>{{ user.phone }}</td>
-                        <td>{{ user.date_joined|date:"F d, Y" }}</td>
+                        <td>
+                            <form method="post" action="{% url 'block_user' user.id %}">
+                                {% csrf_token %}
+                                {% if user.is_blocked %}
+                                    <button type="submit" class="action-button unblock-button">Unblock</button>
+                                {% else %}
+                                    <button type="submit" class="action-button block-button">Block</button>
+                                {% endif %}
+                            </form>
+                        </td>
                     </tr>
+                    {% endif %}
                 {% endfor %}
             </tbody>
         </table>
     </div>
-
 </body>
 </html>

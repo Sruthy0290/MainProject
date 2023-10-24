@@ -112,15 +112,21 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                    {% if not user.is_authenticated or user.is_authenticated and not user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'about' %}">About</a>
+                    </li>
+                    {% endif %}  
+                    <!-- <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li> -->
+                  
                     {% if user.is_superuser %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
                    
                     <!-- Show this button only to superusers -->
                      
-            
+                    <li class="nav-item"><a class="nav-link" href="{% url 'product' %}">Products</a></li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
+                        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop By Category</a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="#">Category</a></li>
                             <li><hr class="dropdown-divider"></li>
@@ -137,11 +143,10 @@
                     </li>
                     {%  elif  user.is_authenticated %}
 
-                   
+                    <li class="nav-item"><a class="nav-link" href="{% url 'product' %}">Products</a></li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
+                        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop By Category</a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">Category</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'wheelchair' %}">Wheelchair</a></li>
                             <li><a class="dropdown-item" href="{% url 'walker' %}">Walker</a></li>
@@ -151,7 +156,10 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Welcome , {{ user.name }}</a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'my_profile' %}">My Profile</a></li>
                             <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                 
+
                         </ul>
                     </li>
                     {% else %}
@@ -181,7 +189,7 @@
             <h2 class="section-title">Featured Products</h2>
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
                 <!-- Product cards go here -->
-                <div class="col mb-5">
+                <!-- <div class="col mb-5">
                     <div class="card h-100">
                         <img class="card-img-top" src="{% static 'images/electric.jpg' %}" alt="Product">
                         <div class="card-body p-4">
@@ -194,7 +202,7 @@
                             <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <!-- Add more product cards here -->
                 <div class="col mb-5">
                     <div class="card h-100">
@@ -206,7 +214,7 @@
                             </div>
                         </div>
                         <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
+                            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="{% url 'walker' %}">View More</a></div>
                         </div>
                     </div>
                 </div>
@@ -220,7 +228,7 @@
                             </div>
                         </div>
                         <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
+                            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View More</a></div>
                         </div>
                     </div>
                 </div>
