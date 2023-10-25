@@ -36,3 +36,34 @@ def home(request):
     return render(request, "home.html", {'user': request.user})
 
 
+from django.core.mail import send_mail
+from django.contrib.auth.views import PasswordResetConfirmView
+
+def send_custom_password_reset_email(email, uid, token, protocol, domain):
+    subject = 'Password Reset Request'
+    message = f'''
+    Someone requested a password reset for the email {email}.
+    Please click the link below to reset your password:
+    
+    {protocol}://{domain}/reset/{uid}/{token}/
+    
+    If you did not request a password reset, please ignore this email.
+    '''
+    sender = 'your_email@example.com'  # Replace with your email address
+    recipients = [email]
+    
+    send_mail(subject, message, sender, recipients)
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == 200:  # Check if the password reset was successful
+            email = response.context_data.get('user_email')
+            uid = response.context_data.get('uid')
+            token = response.context_data.get('token')
+            protocol = 'http'
+            domain = 'localhost:8000'
+            
+            send_custom_password_reset_email(email, uid, token, protocol, domain)
+
+        return response

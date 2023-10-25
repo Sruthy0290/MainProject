@@ -1,30 +1,13 @@
+{% load static %}
+
 {% block content %}
-    <div class="container mt-5">
-        <h2>Order History</h2>
+    <div class="container mt-5" style="text-align: center;">
+        <h2 style="color: #333;">Order Placed</h2>
 
         {% if orders %}
-            <ul class="list-group mt-3">
-                {% for order in orders %}
-                    <li class="list-group-item">
-                        Order ID: {{ order.id }} - Total: Rs {{ order.get_cart_total }}
-                        <br>
-                        Date Ordered: {{ order.date_ordered }}
-                        <br>
-
-                        {% for item in order.orderitem_set.all %}
-                            <div class="product-details">
-                                <img src="{{ item.product.imageURL }}" alt="{{ item.product.name }}">
-                                <h4>{{ item.product.name }}</h4>
-                                <p>Price: Rs {{ item.product.price }}</p>
-                                <p>Quantity: {{ item.quantity }}</p>
-                                <p>Total: Rs {{ item.get_total }}</p>
-                            </div>
-                        {% endfor %}
-                    </li>
-                {% endfor %}
-            </ul>
+            <p style="font-size: 18px; color: #555;">Your order has been placed successfully.</p>
         {% else %}
-            <p>No order history available.</p>
+            <p style="font-size: 18px; color: #555;">No order history available.</p>
         {% endif %}
     </div>
 {% endblock %}

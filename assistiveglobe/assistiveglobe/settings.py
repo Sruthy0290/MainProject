@@ -27,6 +27,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_USERNAME_REQUIRED = False
+AUTH_USER_MODEL='userapp.CustomUser'
 
 # Application definition
 
@@ -107,6 +113,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Emailing settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'assistiveglobe@gmail.com'
+EMAIL_HOST_PASSWORD = 'czdbczpolusqmvgp' 
+DEFAULT_FROM_EMAIL = 'assistiveglobe@gmail.com'
+PASSWORD_RESET_TIMEOUT = 14400
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -138,7 +154,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL='userapp.CustomUser'
+
 RAZOR_KEY_ID = 'rzp_test_aoIUEw4wkfnNBi'
 RAZOR_KEY_SECRET = 'KLviW5670jtVu5tZ2i7164vl'
 

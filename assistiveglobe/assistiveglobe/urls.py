@@ -24,7 +24,8 @@ from userapp.views import delete_product_confirm
 from userapp.views import add_to_cart
 from userapp.views import remove_from_cart
 from userapp.views import block_user
-
+from django.contrib.auth import views as auth_views
+from .views import CustomPasswordResetConfirmView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -67,6 +68,27 @@ urlpatterns = [
     path('my_profile/', v.my_profile, name='my_profile'),
     path('product_search/', v.product_search, name='product_search'),
     path('order_history/', v.order_history, name='order_history'),
+
+
+
+
+
+
+
+
+    # path('password_reset/',auth_views.PasswordResetView.as_view(),name='password_reset'),
+    
+    # path('password_reset/done/',auth_views.PasswordResetDoneView.as_view(),name='password_reset_done'),
+    
+    # path('reset/<uidb64>/<token>/',auth_views.PasswordResetConfirmView.as_view(),name='password_reset_confirm'),
+    
+    # path('reset/done/',auth_views.PasswordResetCompleteView.as_view(),name='password_reset_complete'),
+
+    path('reset_password/',auth_views.PasswordResetView.as_view(),name="reset_password"),
+    path('reset_password_sent/',auth_views.PasswordResetDoneView.as_view(),name="password_reset_done"),
+    path('reset/<uidb64>/<token>/',auth_views.PasswordResetConfirmView.as_view(),name="password_reset_confirm"),
+    # path('reset/<uidb64>/<token>/', CustomPasswordResetConfirmView.as_view(), name="password_reset_confirm"),
+    path('reset_password_complete/',auth_views.PasswordResetCompleteView.as_view(),name="password_reset_complete"),
     
 ]+static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)
 
