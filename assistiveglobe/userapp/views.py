@@ -76,10 +76,10 @@ def login(request):
     if request.user.is_authenticated:
         if request.user.role == CustomUser.CLIENT:
             return redirect('http://127.0.0.1:8000/')
-        # elif request.user.role == CustomUser.THERAPIST:
-        #     return redirect(reverse('therapist'))
-        elif request.user.role == CustomUser.ADMIN:
-            return redirect(reverse('dashboard'))
+        elif request.user.role == CustomUser.MENTOR:
+            return redirect('mentor1')
+        # elif request.user.role == CustomUser.ADMIN:
+        #     return redirect(reverse('dashboard'))
         else:
             return redirect('http://127.0.0.1:8000/')
     elif request.method == 'POST':
@@ -93,8 +93,12 @@ def login(request):
             # print("Authenticated user:", user)  # Print the user for debugging
             if user is not None:
                 auth_login(request, user)
-                # print("User authenticated:", user.email, user.role)
-                return redirect('/')
+                if user.role == CustomUser.MENTOR:
+                    return redirect('mentor1')  # Redirect to the mentor1 page
+                # elif user.role == CustomUser.ADMIN:
+                #     return redirect(reverse('dashboard'))
+                else:
+                    return redirect('/')
             else:
                 return HttpResponseRedirect(reverse('login') + '?alert=invalid_login')
 
@@ -297,10 +301,15 @@ def cart(request):
     cart_items = CartItem.objects.filter(user=request.user)
     total_price = sum(item.product.price * item.quantity for item in cart_items)
     total_items = sum(item.quantity for item in cart_items)
+    product_ids = [item.product.id for item in cart_items]
+    
+    print(product_ids)
+    
     context = {
         'cart_items':cart_items,
         'total_items':total_items,
         'total_price':total_price,
+        'product_ids':product_ids,
     }
     return render(request,'cart.html',context)
 
@@ -373,10 +382,11 @@ def checkout_view(request):
 
 def checkout(request, amt):
     saved_address = None
+    list_param = request.GET.getlist('id')
+    print(list_param)
     name = ""
     phone = ""
     district = ""
-
     if request.user.is_authenticated:
         try:
             saved_address = ShippingAddress.objects.get(user=request.user)
@@ -622,19 +632,27 @@ def product_search(request):
     
     return render(request, 'product_search.html', context)
 
+from django.shortcuts import render
+from .models import Order,Product
 
 def order_history(request):
     if request.user.is_authenticated:
-        orders = Order.objects.filter(user=request.user, complete=True)  # Filter completed orders
-        print("hello")
+        # Filter completed orders for the logged-in user
+        orders = Order.objects.filter(user=request.user, complete=True)
+
+        # Retrieve associated OrderItems for each order
+        order_items = OrderItem.objects.filter(order__in=orders)
     else:
         orders = []
+        order_items = []
 
     context = {
-        'orders': orders
+        'orders': orders,
+        'order_items': order_items,
     }
 
     return render(request, 'order_history.html', context)
+
 
 
 
@@ -651,3 +669,233 @@ def process_order(request, product_id, quantity):
     # Add other logic related to order processing (e.g., sending confirmation emails, etc.)
 
     return redirect('order_history')
+
+
+def mentorindex(request):
+    return render(request, 'mentorindex.html')
+
+
+
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from .models import CustomUser
+from django.contrib import messages
+
+def add_mentor(request):
+    if request.method == 'POST':
+        # Get form data
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        password = request.POST.get('password')
+
+        # Save mentor details to the database (you might want to use a Mentor model)
+        mentor = User(name=name, email=email, phone=phone, password=password, role=CustomUser.MENTOR)
+        mentor.first_name = name
+        mentor.save()
+
+        # Send approval email
+        subject = 'Mentor Approval'
+        message = f'Hello {name},\n\nYour mentor account has been approved. Use the following credentials to login:\n\nUsername: {email}\nPassword: {password}\n\nThank you!'
+        from_email = 'assistiveglobe@gmail.com'  # Update with your admin email
+        recipient_list = [email]
+
+        send_mail(subject, message, from_email, recipient_list)
+
+        messages.success(request, 'Mentor added successfully. Approval email sent.')
+        return redirect('dashboard')  # Redirect to the dashboard or any other desired page
+
+    return render(request, 'add_mentor.html')  # Update with your actual template path
+
+
+
+
+
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def mentor1(request):
+    mentor_name = request.user.username  # Assuming the mentor's name is the username
+    mentor_email = request.user.email  # Assuming you have an email attribute in your CustomUser model
+    mentor_phone = request.user.phone  # Assuming you have a phone attribute in your CustomUser model
+
+    return render(request, 'mentor1.html', {
+        'mentor_name': mentor_name,
+        'mentor_email': mentor_email,
+        'mentor_phone': mentor_phone,
+    })
+
+
+
+
+
+
+# views.py
+
+from django.shortcuts import render, redirect
+from userapp.models import Slots
+from django.contrib.auth.decorators import login_required
+from datetime import datetime
+
+@login_required
+def slot(request):
+    template_name = 'slot.html'
+    
+    if request.method == 'POST':
+        date = request.POST.get('date')
+        start_time = request.POST.get('start_time')
+        end_time = request.POST.get('end_time')
+
+        if date and start_time and end_time:
+            slot = Slots.objects.create(
+                mentor=request.user,
+                date=date,
+                start_time=start_time,
+                end_time=end_time
+            )
+            slot.save()
+            return redirect('mentor1')
+
+        # Handle invalid form data here
+
+    slots = Slots.objects.filter(mentor=request.user)
+    return render(request, template_name, {'slots': slots})
+
+
+
+
+
+
+def appointment(request):
+    return render(request, 'appointment.html')
+
+
+# Django View
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from .models import CustomUser, Slots
+
+def check_mentor_availability(request):
+    mentor_id = request.GET.get('mentor')
+    mentor = get_object_or_404(CustomUser, id=mentor_id)
+
+    # Retrieve the mentor's slots
+    mentor_slots = Slots.objects.filter(mentor=mentor)
+
+    # Determine available dates and times based on mentor's slots
+    available_dates = []
+    available_times = []
+
+    if mentor_slots.exists():
+        # Populate available_dates and available_times
+        for slot in mentor_slots.order_by('date', 'start_time'):
+            available_dates.append(str(slot.date))
+            available_times.append({
+                'start_time': str(slot.start_time),
+                'end_time': str(slot.end_time),
+            })
+
+    response_data = {
+        'available_dates': available_dates,
+        'available_times': available_times,
+    }
+
+    return JsonResponse(response_data)
+
+
+
+
+from django.shortcuts import render
+from .models import CustomUser
+
+def appointment(request):
+    mentors = CustomUser.objects.filter(role=2)  # Assuming 'role=2' represents mentors
+    context = {'mentors': mentors}
+    print("Function")
+    if request.method == 'POST':
+        print("submitted")
+        # If the form is submitted
+        name = request.POST.get('name')
+        mobile = request.POST.get('mobile')
+        mentor_id = request.POST.get('mentor')
+        appointment_date = request.POST.get('appointment_date')
+        appointment_time = request.POST.get('appointment_time')
+        
+        # Retrieve the mentor object
+        mentor = CustomUser.objects.get(id=mentor_id)
+
+        # Create a new appointment object
+        appointment = Appointment(
+            user=request.user,  # Assuming request.user is the logged-in user
+            date=appointment_date,
+            time=appointment_time,
+            mentor=mentor
+        )
+        # Save the appointment to the database
+        appointment.save()
+        print("saved")
+
+        # Optionally, you can redirect the user to a success page
+        return redirect('mentorindex')
+    return render(request, 'appointment.html', context)
+    
+
+from django.shortcuts import render, redirect
+from userapp.models import CustomUser
+from .models import Appointment
+
+def make_appointment(request):
+    print("Function")
+    if request.method == 'POST':
+        print("submitted")
+        # If the form is submitted
+        name = request.POST.get('name')
+        mobile = request.POST.get('mobile')
+        mentor_id = request.POST.get('mentor')
+        appointment_date = request.POST.get('appointment_date')
+        appointment_time = request.POST.get('appointment_time')
+        
+        # Retrieve the mentor object
+        mentor = CustomUser.objects.get(id=mentor_id)
+
+        # Create a new appointment object
+        appointment = Appointment(
+            user=request.user,  # Assuming request.user is the logged-in user
+            date=appointment_date,
+            time=appointment_time,
+            mentor=mentor
+        )
+        # Save the appointment to the database
+        appointment.save()
+        print("saved")
+
+        # Optionally, you can redirect the user to a success page
+        return redirect('mentorindex')  # Replace 'success_page' with the URL name of your success page
+    else:
+        # If it's a GET request, retrieve mentors from the database
+        mentors = CustomUser.objects.all()
+        return render(request, 'appointment.html', {'mentors': mentors})
+
+
+from django.shortcuts import render
+from userapp.models import Appointment
+
+def view_appointment(request):
+    # Assuming the mentor is linked to the Django User model
+    mentor = request.user  # Assuming the logged-in user is the mentor
+    
+    # Filter appointments for the logged-in mentor
+    appointments = Appointment.objects.filter(mentor=mentor)
+    
+    return render(request, 'view_appointment.html', {'appointments': appointments})
+
+from django.shortcuts import render
+from userapp.models import Appointment
+
+def appointment_userview(request):
+    # Assuming the logged-in user is associated with the appointments
+    user = request.user
+    appointments = Appointment.objects.filter(user=user)
+    return render(request, 'appointment_userview.html', {'appointments': appointments})

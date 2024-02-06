@@ -1,0 +1,282 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make an Appointment</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Navbar styles */
+        nav {
+            background-color: #009688;
+            padding: 30px 0;
+            text-align: right; /* Aligning the navigation links to the right */
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+        }
+
+        nav ul li a:hover {
+            background-color: #00796b;
+            border-radius: 4px;
+        }
+
+        /* Section styles */
+        section {
+            padding: 80px 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .section-title h2 {
+            color: #009688;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .col-md-6 {
+            width: 48%;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: #009688;
+            color: #fff;
+            padding: 12px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #00796b;
+        }
+
+        .success-message {
+            color: #009688;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Additional Styling */
+        .form-container {
+            margin-top: 20px;
+        }
+
+        #available_date,
+        #available_time {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <ul>
+            <li style="float:right;"><a href="{% url 'mentorindex' %}">Home</a></li>
+            <!-- <li><a href="#">About</a></li>
+            <li><a href="#">Services</a></li> -->
+            <!-- Add more navigation links as needed -->
+        </ul>
+    </nav>
+
+    <section id="appointment" class="appointment">
+        <div class="container">
+            <div class="section-title">
+                <h2>Make an Appointment</h2>
+            </div>
+
+            <div class="form-container">
+                <form method="post" id="appointment-form">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="name">Name:</label>
+                                <input type="text" id="name" name="name" value="{{ user.name }}" required autocomplete="name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">Mobile Number:</label>
+                                <input type="text" id="phone" name="mobile" value="{{ user.phone }}" required autocomplete="tel">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="mentor">Select Mentor:</label>
+                                <select id="mentor" name="mentor" required onchange="updateMentorAvailability()">
+                                    <option value="" disabled selected>Select Mentor</option>
+                                    {% for mentor in mentors %}
+                                    <option value="{{ mentor.id }}">{{ mentor.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div id="available_date"></div>
+                        <label for="appointment_date">Appointment Date:</label>
+                        <select id="appointment_date" name="appointment_date" required>
+                            <!-- Options will be dynamically added using JavaScript -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div id="available_time"></div>
+                        <label for="appointment_time">Appointment Time:</label>
+                        <select id="appointment_time" name="appointment_time" required>
+                            <!-- Options will be dynamically added using JavaScript -->
+                        </select>
+                    </div>
+                    
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Make an Appointment</button>
+                    </div>
+                </form>
+            </div>
+
+            {% if success_message %}
+            <p class="success-message">{{ success_message }}</p>
+            {% endif %}
+        </div>
+    </section>
+
+
+    <script>
+        function updateMentorAvailability() {
+            var selectedMentor = document.getElementById('mentor').value;
+            var dateDropdown = document.getElementById('appointment_date');
+            var timeDropdown = document.getElementById('appointment_time');
+
+            if (selectedMentor) {
+                fetch(`/check_mentor_availability/?mentor=${selectedMentor}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Clear existing options
+                        dateDropdown.innerHTML = '';
+                        timeDropdown.innerHTML = '';
+
+                        if (data.available_dates && data.available_dates.length > 0) {
+                            // Populate date dropdown
+                            data.available_dates.forEach(date => {
+                                var option = document.createElement('option');
+                                // Format the date
+                                var formattedDate = new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                                option.value = date;
+                                option.text = formattedDate;
+                                if (data.selected_dates && data.selected_dates.includes(date)) {
+                                    option.disabled = true; // Disable the date if already selected by another user
+                                }
+                                dateDropdown.add(option);
+                            });
+                        } else {
+                            // No available dates
+                            var option = document.createElement('option');
+                            option.text = 'No available dates';
+                            dateDropdown.add(option);
+                        }
+
+                        if (data.available_times && data.available_times.length > 0) {
+                            // Populate time dropdown with start and end time
+                            data.available_times.forEach(time => {
+                                var option = document.createElement('option');
+                                // Format the time
+                                var startTime = new Date(`2000-01-01T${time.start_time}`);
+                                var endTime = new Date(`2000-01-01T${time.end_time}`);
+                                option.value = `${time.start_time}-${time.end_time}`;
+                                option.text = `${startTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric' })} - ${endTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric' })}`;
+                                timeDropdown.add(option);
+                            });
+                        } else {
+                            // No available times
+                            var option = document.createElement('option');
+                            option.text = 'No available times';
+                            timeDropdown.add(option);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        }
+        
+
+</script>
+</body>
+
+</html>

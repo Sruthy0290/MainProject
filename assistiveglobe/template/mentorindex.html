@@ -1,0 +1,903 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Mentor-Index</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  {% comment %} <!-- Favicons -->
+  <link href="{% static "assets/img/favicon.png" %}" rel="icon">
+  <link href="{% static "assets/img/apple-touch-icon.png" %}" rel="apple-touch-icon"> {% endcomment %}
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Vendor CSS Files -->
+  <link href="{% static "assets/vendor/fontawesome-free/css/all.min.css" %}" rel="stylesheet">
+  <link href="{% static "assets/vendor/animate.css/animate.min.css" %}" rel="stylesheet">
+  <link href="{% static "assets/vendor/bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
+  <link href="{% static "assets/vendor/bootstrap-icons/bootstrap-icons.css" %}"rel="stylesheet">
+  <link href="{% static "assets/vendor/boxicons/css/boxicons.min.css" %}" rel="stylesheet">
+  <link href="{% static "assets/vendor/glightbox/css/glightbox.min.css" %}" rel="stylesheet">
+  <link href="{% static "assets/vendor/remixicon/remixicon.css" %}" rel="stylesheet">
+  <link href="{% static "assets/vendor/swiper/swiper-bundle.min.css" %}" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.9/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.9/dist/flatpickr.min.js"></script>
+
+
+  <!-- Template Main CSS File -->
+  <link href="{% static "css/mentorstyle.css" %}" rel="stylesheet">
+  <style>
+   body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+    }
+
+    .section-title {
+        text-align: center;
+        margin-top: 50px;
+        margin-bottom: 30px;
+    }
+
+    .section-title h2 {
+        color: #009688; /* Teal color */
+        font-size: 36px;
+        font-weight: bold;
+    }
+
+    .section-title p {
+        color: #666;
+        font-size: 18px;
+        line-height: 1.6;
+        margin-top: 20px;
+    }
+
+    .container {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-tabs {
+        border-bottom: none;
+    }
+
+    .nav-tabs .nav-link {
+        color: #009688; /* Teal color */
+        font-weight: bold;
+        border: none;
+        border-radius: 0;
+        margin-right: 20px;
+        padding: 15px 0;
+        background-color: transparent;
+        transition: background-color 0.3s;
+    }
+
+    .nav-tabs .nav-link.active {
+        background-color: #009688; /* Teal color */
+        color: #fff;
+    }
+
+    .tab-content {
+        padding: 30px 0;
+    }
+
+    .tab-pane {
+        display: none;
+    }
+
+    .tab-pane.active.show {
+        display: block;
+    }
+
+    .tab-content h3 {
+        color: #009688; /* Teal color */
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .tab-content p {
+        color: #666;
+        font-size: 16px;
+        line-height: 1.6;
+        margin-top: 20px;
+    }
+    #main {
+      margin-top: -30px; 
+    }
+    #why-us {
+      padding-top: 8px; 
+      margin-bottom: 5px; 
+    }
+    #services {
+      margin-top: -120px; 
+      margin-bottom: 5px;
+    }
+    #appointment {
+      margin-top: -80px; 
+      padding-top: 8px;
+    }
+    #departments {
+      margin-top: -80px; 
+      padding-top: 30px;
+    }
+    #doctors {
+      margin-top: -80px; 
+      padding-top: 30px; 
+      background-color: transparent; 
+    }
+    #contact {
+      margin-top: -80px; 
+      padding-top: 30px;
+    }
+    #footer {
+      background-color: transparent; 
+      margin-top: -60px; 
+    }
+
+  
+</style>  
+</head>
+
+<body>
+
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="fixed-top">
+    <div class="container d-flex align-items-center">
+
+      <h1 class="logo me-auto"><a href="mentorindex.html">AssistiveGlobe</a></h1>
+      <!-- Uncomment below if you prefer to use an image logo -->
+      <!-- <a href="index.html" class="logo me-auto"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+
+      <nav id="navbar" class="navbar order-last order-lg-0">
+        <ul>
+          <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
+          {% comment %} <li><a class="nav-link scrollto" href="{% url 'product' %}">Products</a></li> {% endcomment %}
+          <li><a class="nav-link scrollto" href="#services">Services</a></li>
+          <li><a class="nav-link scrollto" href="#departments">Types of Mentoring</a></li>
+          <li><a class="nav-link scrollto" href="#doctors">Mentors</a></li>
+          <li><a class="nav-link" href="{% url 'product' %}">Product</a></li>
+          <li><a class="nav-link" href="{% url 'home' %}">Main Page</a></li>
+          {% comment %} <li class="dropdown"><a href="#"><span>Drop Down</span> <i class="bi bi-chevron-down"></i></a>
+            <ul> {% endcomment %}
+              {% comment %} <li><a href="#">Drop Down 1</a></li>
+              <li class="dropdown"><a href="#"><span>Deep Drop Down</span> <i class="bi bi-chevron-right"></i></a>
+                <ul>
+                  <li><a href="#">Deep Drop Down 1</a></li>
+                  <li><a href="#">Deep Drop Down 2</a></li>
+                  <li><a href="#">Deep Drop Down 3</a></li>
+                  <li><a href="#">Deep Drop Down 4</a></li>
+                  <li><a href="#">Deep Drop Down 5</a></li>
+                </ul>
+              </li>
+              <li><a href="#">Drop Down 2</a></li>
+              <li><a href="#">Drop Down 3</a></li>
+              <li><a href="#">Drop Down 4</a></li>
+            </ul> {% endcomment %}
+          {% comment %} </li> {% endcomment %}
+          
+          {% comment %} <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
+        </ul>
+        <i class="bi bi-list mobile-nav-toggle"></i> {% endcomment %}
+      </nav><!-- .navbar -->
+
+      <a href="{% url 'appointment' %}" class="appointment-btn">
+        <span class="d-none d-md-inline">Make an</span> Appointment
+    </a>
+
+    <a href="{% url 'appointment_userview' %}" class="appointment-btn">
+      <span class="d-none d-md-inline">View</span> Appointment
+  </a>
+    
+
+    </div>
+  </header><!-- End Header -->
+
+  <!-- ======= Hero Section ======= -->
+  <section id="hero" class="d-flex align-items-center">
+    <div class="container">
+      <h1>Welcome to the Mentorship Hub on AssistiveGlobe</h1>
+      <h2>Welcome to the Mentorship Hub on AssistiveGlobe, where guidance and support empower users on their journey to discovering the right assistive aids. 
+        Our mentorship program is designed to connect users with experienced mentors who specialize in assistive aids and accessibility solutions.</h2>
+      {% comment %} <a href="#about" class="btn-get-started scrollto">Get Started</a> {% endcomment %}
+    </div>
+  </section><!-- End Hero -->
+
+  <main id="main">
+
+    <!-- ======= Why Us Section ======= -->
+    <section id="why-us" class="why-us">
+      <div class="container">
+
+        <div class="row" >
+          <div class="col-lg-12 d-flex align-items-stretch">
+            <div class="content">
+              <h3>Why Choose Mentorship?</h3>
+              <p>
+                Opting for mentorship on AssistiveGlobe is a choice that brings personalized expert guidance to users exploring assistive aids. Our mentors, seasoned professionals in the field, offer tailored assistance, helping users make informed decisions based on their unique needs. Beyond product knowledge, mentors focus on building users' confidence, promoting independence, and staying abreast of the latest technologies. Various communication channels facilitate seamless interaction, and users can provide feedback, contributing to a supportive community. Mentorship on AssistiveGlobe is more than acquiring information—it's about fostering connections, gaining confidence, and being part of a community dedicated to making the world more accessible for everyone.
+              </p>
+              <div class="text-center">
+                {% comment %} <a href="#" class="more-btn">Learn More <i class="bx bx-chevron-right"></i></a> {% endcomment %}
+              </div>
+            </div>
+          </div>
+        </div>              
+ </div>
+  </section>
+  <!-- End Why Us Section --> 
+
+  
+
+   
+    </section><!-- End Counts Section -->
+
+    <!-- ======= Services Section ======= -->
+    <section id="services" class="services">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Services</h2>
+          <p>The services aim to empower individuals with disabilities by offering tailored assistance, fostering confidence, and promoting independence.The services provided are:</p>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
+            <div class="icon-box">
+              <div class="icon"><i class="fas fa-heart"></i></div>
+              <h4><a href="">Personalized Guidance</a></h4>
+              <p>One-on-one mentorship to provide personalized assistance.
+                Tailored guidance based on the unique needs and preferences of the individual.</p>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-md-0">
+            <div class="icon-box">
+              <div class="icon"><i class="fas fa-shield-alt"></i></div>
+              <h4><a href="">Confidence Building</a></h4>
+              <p>Focus on building confidence and promoting independence.
+                Support to overcome challenges and make informed decisions.</p>
+            </div>
+          </div>
+
+          
+
+          <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-md-0">
+            <div class="icon-box">
+              <div class="icon"><i class="fas fa-wheelchair"></i></div>
+              <h4><a href="">Community Support</a></h4>
+              <p>Inclusion in a supportive community of individuals with shared experiences.
+                Opportunities to connect, share feedback, and contribute to the community.</p>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4">
+            <div class="icon-box">
+              <div class="icon"><i class="fas fa-comment"></i></div>
+              <h4><a href="">Live Chat and Calls</a></h4>
+              <p>Real-time communication with mentors through live chat and calls.
+                Immediate support, allowing users to ask questions and engage in meaningful conversations.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+    <!-- End Services Section -->
+
+    <!-- ======= Appointment Section ======= -->
+    {% comment %} <section id="appointment" class="appointment section-bg">
+      <div class="container">
+          <div class="section-title">
+              <h2>Make an Appointment</h2>
+          </div>
+  
+          <form method="post" action="{% url 'make_appointment' %}">
+              {% csrf_token %}
+              <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="name" class="form-label">Name:</label>
+                      <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}" required>
+                  </div> {% endcomment %}
+                  
+                  {% comment %} <div class="form-group">
+                      <label for="email" class="form-label">Email:</label>
+                      <input type="text" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                  </div>
+                  
+                  <div class="form-group">
+                      <label for="phone" class="form-label">Mobile Number:</label>
+                      <input type="text" class="form-control" id="phone" name="mobile" value="{{ user.phone }}" required>
+                  </div>
+                  </div> {% endcomment %}
+              
+                  {% comment %} <div class="col-md-6">
+                      <div class="form-group">
+                          <label for="appointment_date" class="form-label">Appointment Date:</label>
+                          <input type="date" class="form-control" id="appointment_date" name="appointment_date" required>
+                      </div>
+                      
+                      
+                      <div class="form-group">
+                        <label for="appointment_time" class="form-label">Appointment Time:</label>
+                        <input type="text" class="form-control" id="appointment_time" name="appointment_time" required>
+                      </div> {% endcomment %}
+  
+                      {% comment %} <div class="form-group">
+                        <label for="mentoring_type" class="form-label">Select Type of Mentoring:</label>
+                        <select class="form-select" id="mentoring_type" name="mentoring_type" required>
+                            <option value="" disabled selected>Select Type of Mentoring</option>
+                            <option value="Type1">Peer Mentoring</option>
+                            <option value="Type2">Disability Mentoring</option>
+                            <!-- Add more options as needed -->
+                            {{ form.department }}
+                        </select>
+                    </div> {% endcomment %}
+                    
+                    {% comment %} <div class="form-group">
+                      <label for="mentor" class="form-label">Select Mentor:</label>
+                      <select class="form-select" id="mentor" name="mentor" required>
+                          <option value="" disabled selected>Select Mentor</option>
+                          <option value="Mentor1">Walter White</option>
+                          <option value="Mentor2">Sarah Jhonson</option>
+                          <!-- Add more options as needed -->
+                          {{ form.mentor }}
+                      </select>
+                  </div>
+                  
+                  </div>
+              </div> {% endcomment %}
+  
+              <!-- <div class="form-group">
+                  <label for="additional_info" class="form-label">Additional Information:</label>
+                  <textarea class="form-control" name="additional_info" id="additional_info" rows="3" placeholder="Enter any additional information"></textarea>
+              </div>
+   -->
+              {% comment %} <div class="text-center">
+                  <button type="submit" class="btn btn-primary">Make an Appointment</button>
+              </div>
+          </form>
+  
+          {% if success_message %}
+              <p class="success-message">{{ success_message }}</p>
+          {% endif %}
+      </div>
+  </section>
+   {% endcomment %}
+  <!-- End Appointment Section -->
+
+    <!-- ======= Departments Section ======= -->
+    <section id="departments" class="departments">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Types of Mentoring</h2>
+          <p>A mentor is a person who through support, counsel, friendship, reinforcement and constructive example helps another person, usually a young person, to reach his or her work and life goals. Mentoring relationships provide valuable support to young people, especially those with disabilities, by offering not only academic and career guidance, but also effective role models for leadership, interpersonal and problem-solving skills.</p>
+        </div>
+
+        <div class="container">
+          <div class="row gy-4">
+              <div class="col-lg-9">
+                  <ul class="nav nav-tabs" id="myTabs">
+                      <li class="nav-item">
+                          <a class="nav-link active" id="tab-1-tab" data-toggle="tab" href="#tab-1">Peer Mentoring</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" id="tab-2-tab" data-toggle="tab" href="#tab-2">Disability Mentoring</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" id="tab-3-tab" data-toggle="tab" href="#tab-3">Group Mentoring</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" id="tab-4-tab" data-toggle="tab" href="#tab-4">E-mentoring</a>
+                      </li>
+                  </ul>
+              </div>
+      
+              <div class="col-lg-9 tab-content">
+                <!-- Tab 1: Peer Mentoring -->
+                <div class="tab-pane active show" id="tab-1">
+                    <h3>Peer Mentoring</h3>
+                    <p>A person close in age to his or her mentee may act as a sounding board for ideas and plans and provide guidance in an informal manner.</p>
+                </div>
+    
+                <!-- Tab 2: Disability Mentoring -->
+                <div class="tab-pane" id="tab-2">
+                    <h3>Disability Mentoring</h3>
+                    <p>A person with a disability mentors another person, usually with a similar disability.</p>
+                </div>
+    
+                <!-- Tab 3: Group Mentoring -->
+                <div class="tab-pane" id="tab-3">
+                    <h3>Group Mentoring</h3>
+                    <p>A mentor may work with a group of mentees.</p>
+                </div>
+    
+                <!-- Tab 4: E-mentoring -->
+                <div class="tab-pane" id="tab-4">
+                    <h3>E-mentoring</h3>
+                    <p>An adult mentors a young person through email or the internet.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+             {% comment %} <div class="tab-pane" id="tab-5">
+                <div class="row gy-4">
+                  <div class="col-lg-8 details order-2 order-lg-1">
+                    <h3>Est eveniet ipsam sindera pad rone matrelat sando reda</h3>
+                    <p class="fst-italic">Omnis blanditiis saepe eos autem qui sunt debitis porro quia.</p>
+                    <p>Exercitationem nostrum omnis. Ut reiciendis repudiandae minus. Omnis recusandae ut non quam ut quod eius qui. Ipsum quia odit vero atque qui quibusdam amet. Occaecati sed est sint aut vitae molestiae voluptate vel</p>
+                  </div>
+                  <div class="col-lg-4 text-center order-1 order-lg-2">
+                    <img src="{% static "images/departments-5.jpg" %}"alt="" class="img-fluid">
+                  </div>
+                </div>
+              </div> {% endcomment %}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section><!-- End Departments Section -->
+
+    <!-- ======= Doctors Section ======= -->
+    <section id="doctors" class="doctors">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Mentors</h2>
+          <p>Our mentors are seasoned professionals dedicated to guiding and empowering individuals on their journey to success. With a wealth of experience in diverse fields, they bring a unique blend of expertise, wisdom, and a passion for fostering growth. Committed to sharing their knowledge and providing valuable insights, our mentors play a pivotal role in shaping the future of their mentees. Through personalized guidance, encouragement, and a collaborative approach, they contribute to the development and success of those they mentor. Meet the exceptional individuals who make up our mentorship team:</p>
+        </div>
+
+        <div class="row">
+
+          <div class="col-lg-6">
+            <div class="member d-flex align-items-start">
+              <div class="pic"><img src="{% static "assets/img/doctors/doctors-1.jpg" %}" class="img-fluid" alt=""></div>
+              <div class="member-info">
+                <h4>John Joseph</h4>
+                <span>Chief Medical Officer</span>
+                {% comment %} <p>Explicabo voluptatem mollitia et repellat qui dolorum quasi</p> {% endcomment %}
+                <div class="social">
+                  <a href=""><i class="ri-twitter-fill"></i></a>
+                  <a href=""><i class="ri-facebook-fill"></i></a>
+                  <a href=""><i class="ri-instagram-fill"></i></a>
+                  <a href=""> <i class="ri-linkedin-box-fill"></i> </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6 mt-4 mt-lg-0">
+            <div class="member d-flex align-items-start">
+              <div class="pic"><img src="{% static "assets/img/doctors/doctors-2.jpg" %}" class="img-fluid" alt=""></div>
+              <div class="member-info">
+                <h4>Sarah Jhonson</h4>
+                <span>Neurologist</span>
+                {% comment %} <p>Aut maiores voluptates amet et quis praesentium qui senda para</p> {% endcomment %}
+                <div class="social">
+                  <a href=""><i class="ri-twitter-fill"></i></a>
+                  <a href=""><i class="ri-facebook-fill"></i></a>
+                  <a href=""><i class="ri-instagram-fill"></i></a>
+                  <a href=""> <i class="ri-linkedin-box-fill"></i> </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6 mt-4">
+            <div class="member d-flex align-items-start">
+              <div class="pic"><img src="{% static "assets/img/doctors/doctors-3.jpg" %}" class="img-fluid" alt=""></div>
+              <div class="member-info">
+                <h4>Tom Philip</h4>
+                <span>Cardiology</span>
+                {% comment %} <p>Quisquam facilis cum velit laborum corrupti fuga rerum quia</p> {% endcomment %}
+                <div class="social">
+                  <a href=""><i class="ri-twitter-fill"></i></a>
+                  <a href=""><i class="ri-facebook-fill"></i></a>
+                  <a href=""><i class="ri-instagram-fill"></i></a>
+                  <a href=""> <i class="ri-linkedin-box-fill"></i> </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6 mt-4">
+            <div class="member d-flex align-items-start">
+              <div class="pic"><img src="{% static "assets/img/doctors/doctors-4.jpg" %}" class="img-fluid" alt=""></div>
+              <div class="member-info">
+                <h4>Amanda Thomas</h4>
+                <span>Neurosurgeon</span>
+                {% comment %} <p>Dolorum tempora officiis odit laborum officiis et et accusamus</p> {% endcomment %}
+                <div class="social">
+                  <a href=""><i class="ri-twitter-fill"></i></a>
+                  <a href=""><i class="ri-facebook-fill"></i></a>
+                  <a href=""><i class="ri-instagram-fill"></i></a>
+                  <a href=""> <i class="ri-linkedin-box-fill"></i> </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+    <!-- End Doctors Section -->
+
+   
+
+    <!-- ======= Contact Section ======= -->
+    <section id="contact" class="contact">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Contact</h2>
+          <!-- <p>Magnam dolores commodi suscipit. Necessitatibus eius consequatur ex aliquid fuga eum quidem. Sit sint consectetur velit. Quisquam quos quisquam cupiditate. Et nemo qui impedit suscipit alias ea. Quia fugiat sit in iste officiis commodi quidem hic quas.</p> -->
+        </div>
+      </div>
+
+      <!-- <div>
+        <iframe style="border:0; width: 100%; height: 350px;" src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d12097.433213460943!2d-74.0062269!3d40.7101282!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xb89d1fe6bc499443!2sDowntown+Conference+Center!5e0!3m2!1smk!2sbg!4v1539943755621" frameborder="0" allowfullscreen></iframe>
+      </div> -->
+
+      <div class="container">
+        <div class="row mt-5">
+
+          <div class="col-lg-4">
+            <div class="info">
+              <div class="address">
+                <i class="bi bi-geo-alt"></i>
+                <h4>Location:</h4>
+                <p>Kanjirappally</p>
+              </div>
+
+              <div class="email">
+                <i class="bi bi-envelope"></i>
+                <h4>Email:</h4>
+                <p>assistiveglobe@gmail.com</p>
+              </div>
+
+              <div class="phone">
+                <i class="bi bi-phone"></i>
+                <h4>Call:</h4>
+                <p>+91 9467445512</p>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="col-lg-8 mt-5 mt-lg-0">
+
+            <form action="forms/contact.php" method="post" role="form" class="php-email-form">
+              <div class="row">
+                <div class="col-md-6 form-group">
+                  <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" required>
+                </div>
+                <div class="col-md-6 form-group mt-3 mt-md-0">
+                  <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" required>
+                </div>
+              </div>
+              <div class="form-group mt-3">
+                <input type="text" class="form-control" name="subject" id="subject" placeholder="Subject" required>
+              </div>
+              <div class="form-group mt-3">
+                <textarea class="form-control" name="message" rows="5" placeholder="Message" required></textarea>
+              </div>
+              <div class="my-3">
+                <div class="loading">Loading</div>
+                <div class="error-message"></div>
+                <div class="sent-message">Your message has been sent. Thank you!</div>
+              </div>
+              <div class="text-center"><button type="submit">Send Message</button></div>
+            </form>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+    <!-- End Contact Section -->
+
+  </main><!-- End #main -->
+<!-- Remove the container if you want to extend the Footer to full width. -->
+<!-- <div class="container my-5"> -->
+  <!-- Footer -->
+  <!-- <footer
+          class="text-center text-lg-start text-dark"
+          style="background-color: #ECEFF1"
+          > -->
+    <!-- Section: Social media -->
+    <!-- <section
+             class="d-flex justify-content-between p-4 text-white"
+             style="background-color: #21D192"
+             > -->
+      <!-- Left -->
+      <!-- <div class="me-5">
+        <span>Get connected with us on social networks:</span>
+      </div> -->
+      <!-- Left -->
+
+      <!-- Right -->
+      <!-- <div>
+        <a href="" class="text-white me-4">
+          <i class="fab fa-facebook-f"></i>
+        </a>
+        <a href="" class="text-white me-4">
+          <i class="fab fa-twitter"></i>
+        </a>
+        <a href="" class="text-white me-4">
+          <i class="fab fa-google"></i>
+        </a>
+        <a href="" class="text-white me-4">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a href="" class="text-white me-4">
+          <i class="fab fa-linkedin"></i>
+        </a>
+        <a href="" class="text-white me-4">
+          <i class="fab fa-github"></i>
+        </a>
+      </div> -->
+      <!-- Right -->
+    <!-- </section> -->
+    <!-- Section: Social media -->
+
+    <!-- Section: Links  -->
+    <!-- <section class="">
+      <div class="container text-center text-md-start mt-5"> -->
+        <!-- Grid row -->
+        <!-- <div class="row mt-3"> -->
+          <!-- Grid column -->
+          <!-- <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4"> -->
+            <!-- Content -->
+            <!-- <h6 class="text-uppercase fw-bold">Company name</h6>
+            <hr
+                class="mb-4 mt-0 d-inline-block mx-auto"
+                style="width: 60px; background-color: #7c4dff; height: 2px"
+                />
+            <p>
+              Here you can use rows and columns to organize your footer
+              content. Lorem ipsum dolor sit amet, consectetur adipisicing
+              elit.
+            </p>
+          </div> -->
+          <!-- Grid column -->
+
+          <!-- Grid column -->
+          <!-- <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4"> -->
+            <!-- Links -->
+            <!-- <h6 class="text-uppercase fw-bold">Products</h6>
+            <hr
+                class="mb-4 mt-0 d-inline-block mx-auto"
+                style="width: 60px; background-color: #7c4dff; height: 2px"
+                />
+            <p>
+              <a href="#!" class="text-dark">MDBootstrap</a>
+            </p>
+            <p>
+              <a href="#!" class="text-dark">MDWordPress</a>
+            </p>
+            <p>
+              <a href="#!" class="text-dark">BrandFlow</a>
+            </p>
+            <p>
+              <a href="#!" class="text-dark">Bootstrap Angular</a>
+            </p>
+          </div> -->
+          <!-- Grid column -->
+
+          <!-- Grid column -->
+          <!-- <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4"> -->
+            <!-- Links -->
+            <!-- <h6 class="text-uppercase fw-bold">Useful links</h6>
+            <hr
+                class="mb-4 mt-0 d-inline-block mx-auto"
+                style="width: 60px; background-color: #7c4dff; height: 2px"
+                />
+            <p>
+              <a href="#!" class="text-dark">Your Account</a>
+            </p>
+            <p>
+              <a href="#!" class="text-dark">Become an Affiliate</a>
+            </p>
+            <p>
+              <a href="#!" class="text-dark">Shipping Rates</a>
+            </p>
+            <p>
+              <a href="#!" class="text-dark">Help</a>
+            </p>
+          </div> -->
+          <!-- Grid column -->
+
+          <!-- Grid column -->
+          <!-- <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4"> -->
+            <!-- Links -->
+            <!-- <h6 class="text-uppercase fw-bold">Contact</h6>
+            <hr
+                class="mb-4 mt-0 d-inline-block mx-auto"
+                style="width: 60px; background-color: #7c4dff; height: 2px"
+                />
+            <p><i class="fas fa-home mr-3"></i> New York, NY 10012, US</p>
+            <p><i class="fas fa-envelope mr-3"></i> info@example.com</p>
+            <p><i class="fas fa-phone mr-3"></i> + 01 234 567 88</p>
+            <p><i class="fas fa-print mr-3"></i> + 01 234 567 89</p>
+          </div> -->
+          <!-- Grid column -->
+        </div>
+        <!-- Grid row -->
+      </div>
+    </section>
+    <!-- Section: Links  -->
+
+    <!-- Copyright -->
+    <div
+         class="text-center p-3"
+         style="background-color: rgba(0, 0, 0, 0.2)"
+         >
+      © 2023 Copyright:
+      <a class="text-dark" href="https://mdbootstrap.com/"
+         >AssistiveGlobe</a
+        >
+    </div>
+    <!-- Copyright -->
+  </footer>
+  <!-- Footer -->
+</div>
+<!-- End of .container -->
+  <!-- ======= Footer ======= -->
+  <!-- <footer id="footer">
+
+     <div class="footer-top">
+      <div class="container">
+        <div class="row">
+
+          <div class="col-lg-3 col-md-6 footer-contact">
+            <h3>AssistiveGlobe</h3>
+            <p>
+              A108 Adam Street <br>
+              New York, NY 535022<br>
+              United States <br><br>
+              <strong>Phone:</strong> +1 5589 55488 55<br>
+              <strong>Email:</strong> info@example.com<br>
+            </p>
+          </div>
+
+          {% comment %} <div class="col-lg-2 col-md-6 footer-links">
+            <h4>Useful Links</h4>
+            <ul>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Home</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">About us</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Services</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Terms of service</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Privacy policy</a></li>
+            </ul>
+          </div>
+
+          <div class="col-lg-3 col-md-6 footer-links">
+            <h4>Our Services</h4>
+            <ul>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Web Design</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Web Development</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Product Management</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Marketing</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Graphic Design</a></li>
+            </ul>
+          </div> {% endcomment %}
+
+          <div class="col-lg-4 col-md-6 footer-newsletter">
+            <h4>Join Our Newsletter</h4>
+            <p>Tamen quem nulla quae legam multos aute sint culpa legam noster magna</p>
+            <form action="" method="post">
+              <input type="email" name="email"><input type="submit" value="Subscribe">
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="container d-md-flex py-4">
+
+      <div class="me-md-auto text-center text-md-start">
+        <div class="copyright">
+          &copy; Copyright <strong><span>AssistiveGlobe</span></strong>. All Rights Reserved
+        </div> -->
+        <!-- <div class="credits"> -->
+          <!-- All the links in the footer should remain intact. -->
+          <!-- You can delete the links only if you purchased the pro version. -->
+          <!-- Licensing information: https://bootstrapmade.com/license/ -->
+          <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/medilab-free-medical-bootstrap-theme/ -->
+          <!-- Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> -->
+        <!-- </div> 
+      </div> -->
+      <div class="social-links text-center text-md-right pt-3 pt-md-0">
+        <a href="#" class="twitter"><i class="bx bxl-twitter"></i></a>
+        <a href="#" class="facebook"><i class="bx bxl-facebook"></i></a>
+        <a href="#" class="instagram"><i class="bx bxl-instagram"></i></a>
+        <a href="#" class="google-plus"><i class="bx bxl-skype"></i></a>
+        <a href="#" class="linkedin"><i class="bx bxl-linkedin"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- End Footer -->
+
+  <div id="preloader"></div>
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+ 
+  <!-- Template Main JS File -->
+  <script src="{% static "assets/js/main.js" %}"></script>
+  {% comment %} <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var picker = new Pikaday({
+            field: document.getElementById('appointment_date'),
+            format: 'YYYY-MM-DD',
+            minDate: new Date(),
+            showYearDropdown: true,
+            yearRange: [1900, new Date().getFullYear()],
+            onSelect: function(date) {
+                document.getElementById('appointment_date').value = picker.toString();
+            }
+        });
+    });
+
+    // Add JavaScript for date validation
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; // January is 0!
+        var yyyy = today.getFullYear();
+
+        if (dd < 10) {
+            dd = '0' + dd;
+        }
+
+        if (mm < 10) {
+            mm = '0' + mm;
+        }
+
+        today = yyyy + '-' + mm + '-' + dd;
+        document.getElementById("appointment_date").setAttribute("min", today);
+
+
+        flatpickr("#appointment_time", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true,
+        minTime: "08:00",
+        maxTime: "18:00",
+        minuteIncrement: 15,  // Set the time interval
+    });
+   
+</script> {% endcomment %}
+
+
+</body>
+
+</html>

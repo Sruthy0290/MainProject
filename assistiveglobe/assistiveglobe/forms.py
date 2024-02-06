@@ -36,4 +36,26 @@ class DeleteProductForm(forms.Form):
     )
 
 
+# from django import forms
+# from userapp.models import Appointment
 
+# class AppointmentForm(forms.ModelForm):
+#     class Meta:
+#         model = Appointment
+#         fields = ['user', 'date', 'time',  'mentor']
+
+#     # Optionally, you can add widgets or customize form fields here
+#     widgets = {
+#         'date': forms.DateInput(attrs={'type': 'date'}),
+#         'time': forms.TimeInput(attrs={'type': 'time'}),
+#     }
+
+
+
+from django import forms
+from userapp.models import Slots
+
+class SlotsForm(forms.ModelForm):
+    class Meta:
+        model = Slots
+        fields = ['date', 'start_time', 'end_time']

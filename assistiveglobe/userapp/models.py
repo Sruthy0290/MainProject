@@ -142,14 +142,12 @@ class Order(models.Model):
         total = sum([item.quantity for item in orderitems])
         return total  
 
-
-
-    
+  
 
 class OrderItem(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.SET_NULL,null=True)
-    quantity = models.IntegerField(default=0, null=True, blank=True)
+    quantity = models.IntegerField(default=1)
     date_added = models.DateTimeField(auto_now_add=True)
 
     @property
@@ -195,11 +193,33 @@ class CartItem(models.Model):
     
 
     def __str__(self):
-        return f'{self.quantity} x {self.product.name} in {self.user.username}\'s cart'
+        return f'{self.quantity} x {self.product.name} in {self.user.name}\'s cart'
 
 
 sorted_products = {category[0]: Product.objects.filter(category=category[0]) for category in CATEGORY_CHOICES}
 
 
 
+
+
+class Slots(models.Model):
+    mentor = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    date = models.DateField(null=True, blank=True)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+   
+    def __str__(self):
+        return f"Slot for Dr. {self.mentor.name} on {self.date} at {self.start_time}-{self.end_time}"
+
+
+
+class Appointment(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    date = models.DateField(null=True)
+    time = models.TimeField(null=True)
+    mentor = models.CharField(max_length=50)
+    
+
+    def __str__(self):
+        return f"{self.user} - {self.date} {self.time}"
 

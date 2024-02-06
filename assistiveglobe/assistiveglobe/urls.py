@@ -26,6 +26,11 @@ from userapp.views import remove_from_cart
 from userapp.views import block_user
 from django.contrib.auth import views as auth_views
 from .views import CustomPasswordResetConfirmView
+from userapp.views import make_appointment
+from userapp.views import add_mentor
+from userapp.views import mentor1
+from userapp.views import check_mentor_availability
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -42,7 +47,7 @@ urlpatterns = [
     path('add_to_cart/<int:product_id>/',v.add_to_cart,name='add_to_cart'),
     path('remove_from_cart/<int:cart_id>/', v.remove_from_cart, name='remove_from_cart'),
     path('update_cart_quantity/<int:cart_id>/', v.update_cart_quantity, name='update_cart_quantity'),
-    path('checkout/<int:amt>', v.checkout, name='checkout'),
+    path('checkout/<int:amt>/', v.checkout, name='checkout'),
     path('checkout/new/', v.checkout_view, name='checkout_new'),
     path('edit_address/', v.edit_address, name='edit_address'),
     path('dashboard/',v.dashboard,name='dashboard'),
@@ -68,6 +73,17 @@ urlpatterns = [
     path('my_profile/', v.my_profile, name='my_profile'),
     path('product_search/', v.product_search, name='product_search'),
     path('order_history/', v.order_history, name='order_history'),
+
+    # Mentor
+    path('mentorindex/', v.mentorindex, name='mentorindex'),
+    path('add_mentor/', v.add_mentor, name='add_mentor'),
+    path('mentor1/', v.mentor1, name='mentor1'),
+    path('slot/', v.slot, name='slot'),
+    path('view_appointment/', v.view_appointment, name='view_appointment'),
+    path('appointment/', v.appointment, name='appointment'),
+    path('check_mentor_availability/', v.check_mentor_availability, name='check_mentor_availability'),
+    path('make_appointment/', v.make_appointment, name='make_appointment'),
+    path('appointment_userview/', v.appointment_userview, name='appointment_userview'),
 
 
 

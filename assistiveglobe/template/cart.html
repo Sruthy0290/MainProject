@@ -163,10 +163,10 @@
                     {% for item in cart_items %}
                     <tr>
                         <td>
-                            <div class="card">
+                            <div class="card" >
                                 <img class="row-image" src="{{item.product.imageURL}}">
                                 <div class="card-details">
-                                    <h3>{{item.product.name}}</h3>
+                                    <h3 class="prodName" data-card-id="{{ item.product_id }}">{{item.product.name}}</h3>
                                 </div>
                             </div>
                         </td>
@@ -285,9 +285,19 @@
         
         // Extract the numeric value from the string
         var total = parseFloat(subtotalText.match(/\d+\.\d+/)[0]);
+        var p_id = document.querySelectorAll('.prodName')
+        var list = ""
+        p_id.forEach(item => {
+            var id = item.getAttribute("data-card-id");
+            list += `&${id}`;
+        })    
 
         // Now, 'total' contains the total price
-        window.location.href = "{% url 'checkout' 0 %}".replace("0",total);
+        var url = "{% url 'checkout' 0 %}".replace("0", total) + list;
+        window.location.href = url;
+        // window.location.href = "{% url 'checkout' 0   %}".replace("0",total) 
+
+        // window.location.href = "{% url 'checkout' 0   %}".replace("0",total);
         })
             });
         });
