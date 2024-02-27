@@ -30,6 +30,7 @@ from userapp.views import make_appointment
 from userapp.views import add_mentor
 from userapp.views import mentor1
 from userapp.views import check_mentor_availability
+from userapp.views import get_available_times
 
 
 urlpatterns = [
@@ -62,6 +63,8 @@ urlpatterns = [
     path('wheelchair/', v.wheelchair, name='wheelchair'),
     path('walker/', v.walker, name='walker'),
     path('crutches/', v.crutches, name='crutches'),
+    path('stock/',v.stock,name='stock'),
+    path('update_stock/<int:product_id>/', v.update_stock, name='update_stock'),
 
     path('paymenthandler/<int:amount>', v.paymenthandler, name='paymenthandler'),
     path('payment/<int:amt>',v.payment,name="payment"),
@@ -84,7 +87,12 @@ urlpatterns = [
     path('check_mentor_availability/', v.check_mentor_availability, name='check_mentor_availability'),
     path('make_appointment/', v.make_appointment, name='make_appointment'),
     path('appointment_userview/', v.appointment_userview, name='appointment_userview'),
-
+    path('cancel_appointment/<int:appointment_id>/', v.cancel_appointment, name='cancel_appointment'),
+    path('bookedslot/', v.bookedslot, name='bookedslot'),
+    path('cancel_slot/<int:slot_id>/', v.cancel_slot, name='cancel_slot'),
+    path('get_available_times/', v.get_available_times, name='get_available_times'),
+    
+    
 
 
 

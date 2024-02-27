@@ -293,9 +293,9 @@
         })    
 
         // Now, 'total' contains the total price
-        var url = "{% url 'checkout' 0 %}".replace("0", total) + list;
-        window.location.href = url;
-        // window.location.href = "{% url 'checkout' 0   %}".replace("0",total) 
+        // var url = "{% url 'checkout' 0 %}".replace("0", total) + list;
+        // window.location.href = url;
+        window.location.href = "{% url 'checkout' 0   %}".replace("0",total) 
 
         // window.location.href = "{% url 'checkout' 0   %}".replace("0",total);
         })

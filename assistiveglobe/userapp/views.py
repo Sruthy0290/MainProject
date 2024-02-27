@@ -55,21 +55,6 @@ def signup(request):
 
     return render(request,'signup.html')
 
-# def login(request):
-#     error_message = ""
-#     if request.method == 'POST': 
-#         email = request.POST.get('email')
-#         password = request.POST.get('pass')
-#         user=auth.authenticate(email=email,password=password)
-#         if user is not None:
-#             print(user)
-#             auth.login(request,user)
-#             return redirect('/')
-            
-#         else:
-#             error_message = "Invalid email or password."
-#             return render(request, 'login.html', {'error_message': error_message})
-
 
 
 def login(request):
@@ -345,9 +330,9 @@ def update_cart_quantity(request, cart_id):
 
 
 
-from .models import CustomUser
+from userapp.models import CustomUser
 from django.shortcuts import render, redirect
-from .models import ShippingAddress
+from userapp.models import ShippingAddress
 
 
 def checkout_view(request):
@@ -382,11 +367,10 @@ def checkout_view(request):
 
 def checkout(request, amt):
     saved_address = None
-    list_param = request.GET.getlist('id')
-    print(list_param)
     name = ""
     phone = ""
     district = ""
+
     if request.user.is_authenticated:
         try:
             saved_address = ShippingAddress.objects.get(user=request.user)
@@ -411,7 +395,6 @@ def checkout(request, amt):
     }
 
     return render(request, 'checkout.html', context)
-
 
 
 
@@ -475,6 +458,25 @@ def edit_product(request, product_id):
         form = ProductUpdateForm(instance=product)
     
     return render(request, 'edit_product.html', {'form': form, 'admin_product': product})
+
+
+
+# STOCK 
+from django.shortcuts import render, redirect
+from userapp.models import Product
+
+def stock(request):
+    products = Product.objects.all()
+    return render(request, 'stock.html', {'products': products})
+
+def update_stock(request, product_id):
+    if request.method == 'POST':
+        stock = int(request.POST.get('stock'))
+        product = Product.objects.get(id=product_id)
+        product.stock = stock
+        product.save()
+        return redirect('stock')
+
 
 
 
@@ -633,26 +635,49 @@ def product_search(request):
     return render(request, 'product_search.html', context)
 
 from django.shortcuts import render
-from .models import Order,Product
+from userapp.models import Order,Product
+
+# def order_history(request):
+#     if request.user.is_authenticated:
+#         # Filter completed orders for the logged-in user
+#         orders = Order.objects.filter(user=request.user, complete=True)
+
+#         # Retrieve associated OrderItems for each order
+#         order_items = OrderItem.objects.filter(order__in=orders)
+#         print(order_items)
+#     else:
+#         orders = []
+#         order_items = []
+
+#     context = {
+#         'orders': orders,
+#         'order_items': order_items,
+#     }
+
+#     return render(request, 'order_history.html', context)
 
 def order_history(request):
     if request.user.is_authenticated:
         # Filter completed orders for the logged-in user
         orders = Order.objects.filter(user=request.user, complete=True)
 
+        # Initialize an empty dictionary to store order items for each order
+        order_items_dict = {}
+
         # Retrieve associated OrderItems for each order
-        order_items = OrderItem.objects.filter(order__in=orders)
+        for order in orders:
+            order_items = OrderItem.objects.filter(order=order)
+            order_items_dict[order] = order_items
+
     else:
         orders = []
-        order_items = []
+        order_items_dict = {}
 
     context = {
         'orders': orders,
-        'order_items': order_items,
+        'order_items_dict': order_items_dict,  # Pass the dictionary containing order items for each order
     }
-
     return render(request, 'order_history.html', context)
-
 
 
 
@@ -669,6 +694,9 @@ def process_order(request, product_id, quantity):
     # Add other logic related to order processing (e.g., sending confirmation emails, etc.)
 
     return redirect('order_history')
+
+
+
 
 
 def mentorindex(request):
@@ -730,98 +758,117 @@ def mentor1(request):
 
 
 
-
-
-# views.py
-
 from django.shortcuts import render, redirect
 from userapp.models import Slots
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
-
 @login_required
 def slot(request):
     template_name = 'slot.html'
     
     if request.method == 'POST':
         date = request.POST.get('date')
-        start_time = request.POST.get('start_time')
-        end_time = request.POST.get('end_time')
+        time_slots = request.POST.getlist('time_slot')  # Retrieve selected time slots as a list
 
-        if date and start_time and end_time:
-            slot = Slots.objects.create(
-                mentor=request.user,
-                date=date,
-                start_time=start_time,
-                end_time=end_time
-            )
-            slot.save()
+        print("Date:", date)  # Debug output
+        print("Time slots:", time_slots)  # Debug output
+
+        if date and time_slots:
+            # Iterate over the selected time slots and save each one
+            for selected_slot in time_slots:  # Renamed the loop variable
+                start_time, end_time = selected_slot.split(' - ')  # Split the time slot string to get start and end times
+                print("Start time:", start_time)  # Debug output
+                print("End time:", end_time)  # Debug output
+                # Create and save the slot object
+                slot_obj = Slots.objects.create(
+                    mentor=request.user,
+                    date=date,
+                    start_time=start_time,
+                    end_time=end_time
+                )
+                slot_obj.save()
+            
             return redirect('mentor1')
-
-        # Handle invalid form data here
-
     slots = Slots.objects.filter(mentor=request.user)
-    return render(request, template_name, {'slots': slots})
+    return render(request, 'slot.html', {'slots': slots})  # Fixed the template name argument
 
 
+# views.py
 
+from django.http import JsonResponse
+from userapp.models import Slots
 
-
-
-def appointment(request):
-    return render(request, 'appointment.html')
+def get_available_times(request):
+    selected_date = request.GET.get('date')
+    
+    # Retrieve the available time slot for the selected date
+    available_slot = Slots.objects.filter(date=selected_date, cancelled=False).first()
+    
+    if available_slot:
+        # If an available slot is found, format the time slot
+        available_time = f"{available_slot.start_time} - {available_slot.end_time}"
+        return JsonResponse({'availableTimes': [available_time]})
+    else:
+        return JsonResponse({'availableTimes': []})  # Return an empty array if no slot is available
 
 
 # Django View
+from django.shortcuts import render
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from .models import CustomUser, Slots
+from userapp.models import Slots
 
 def check_mentor_availability(request):
-    mentor_id = request.GET.get('mentor')
-    mentor = get_object_or_404(CustomUser, id=mentor_id)
+    if request.method == 'GET':
+        mentor_id = request.GET.get('mentor')
+        if mentor_id:
+            try:
+                # Retrieve available and cancelled slots for the mentor
+                available_slots = Slots.objects.filter(mentor_id=mentor_id, cancelled=False)
+                cancelled_slots = Slots.objects.filter(mentor_id=mentor_id, cancelled=True)
 
-    # Retrieve the mentor's slots
-    mentor_slots = Slots.objects.filter(mentor=mentor)
+                # Extract time slots from cancelled slots
+                cancelled_times = [f"{slot.start_time}-{slot.end_time}" for slot in cancelled_slots]
 
-    # Determine available dates and times based on mentor's slots
-    available_dates = []
-    available_times = []
+                # Determine available times based on available slots
+                available_times = []
+                for slot in available_slots:
+                    available_times.append({
+                        'start_time': slot.start_time,
+                        'end_time': slot.end_time
+                    })
 
-    if mentor_slots.exists():
-        # Populate available_dates and available_times
-        for slot in mentor_slots.order_by('date', 'start_time'):
-            available_dates.append(str(slot.date))
-            available_times.append({
-                'start_time': str(slot.start_time),
-                'end_time': str(slot.end_time),
-            })
+                # Extract available dates from available slots
+                available_dates = list(set(slot.date for slot in available_slots))
 
-    response_data = {
-        'available_dates': available_dates,
-        'available_times': available_times,
-    }
+                # Return data as JSON response
+                return JsonResponse({
+                    'available_dates': available_dates,
+                    'available_times': available_times,
+                    'cancelled_times': cancelled_times
+                })
+            except Slots.DoesNotExist:
+                return JsonResponse({'error': 'Slots not found for this mentor'}, status=404)
 
-    return JsonResponse(response_data)
+    return JsonResponse({'error': 'Invalid request method or missing mentor ID'}, status=400)
 
 
 
-
-from django.shortcuts import render
-from .models import CustomUser
+from django.shortcuts import render, redirect
+from userapp.models import CustomUser
+from userapp.models import Appointment
+from datetime import datetime
 
 def appointment(request):
     mentors = CustomUser.objects.filter(role=2)  # Assuming 'role=2' represents mentors
     context = {'mentors': mentors}
-    print("Function")
     if request.method == 'POST':
-        print("submitted")
         # If the form is submitted
         name = request.POST.get('name')
         mobile = request.POST.get('mobile')
         mentor_id = request.POST.get('mentor')
         appointment_date = request.POST.get('appointment_date')
         appointment_time = request.POST.get('appointment_time')
+        
         
         # Retrieve the mentor object
         mentor = CustomUser.objects.get(id=mentor_id)
@@ -835,27 +882,34 @@ def appointment(request):
         )
         # Save the appointment to the database
         appointment.save()
-        print("saved")
 
         # Optionally, you can redirect the user to a success page
         return redirect('mentorindex')
-    return render(request, 'appointment.html', context)
+    else:
+        # If it's a GET request, retrieve mentors from the database
+        mentors = CustomUser.objects.all()
+        # Get the list of cancelled dates and times
+        cancelled_dates = Appointment.objects.filter(cancelled=True).values_list('date', flat=True)
+        cancelled_times = Appointment.objects.filter(cancelled=True).values_list('time', flat=True)
+        # Pass the cancelled dates and times to the template context
+        context['cancelled_dates'] = cancelled_dates
+        context['cancelled_times'] = cancelled_times
+        return render(request, 'appointment.html', context)
+
     
 
 from django.shortcuts import render, redirect
-from userapp.models import CustomUser
-from .models import Appointment
+from userapp.models import CustomUser, Appointment
 
 def make_appointment(request):
-    print("Function")
     if request.method == 'POST':
-        print("submitted")
         # If the form is submitted
         name = request.POST.get('name')
         mobile = request.POST.get('mobile')
         mentor_id = request.POST.get('mentor')
         appointment_date = request.POST.get('appointment_date')
         appointment_time = request.POST.get('appointment_time')
+        print(appointment_time)
         
         # Retrieve the mentor object
         mentor = CustomUser.objects.get(id=mentor_id)
@@ -872,30 +926,105 @@ def make_appointment(request):
         print("saved")
 
         # Optionally, you can redirect the user to a success page
-        return redirect('mentorindex')  # Replace 'success_page' with the URL name of your success page
+        return redirect('mentorindex')  # Replace 'mentorindex' with the URL name of your success page
     else:
         # If it's a GET request, retrieve mentors from the database
         mentors = CustomUser.objects.all()
-        return render(request, 'appointment.html', {'mentors': mentors})
+        
+        # Get available appointments by excluding cancelled appointments
+        available_mentors = []
+        for mentor in mentors:
+            available_appointments = mentor.appointment_set.filter(cancelled=False)  # Exclude cancelled appointments
+            available_mentors.append({
+                'mentor': mentor,
+                'available_appointments': available_appointments
+            })
+
+        context = {
+            'mentors': available_mentors,
+        }
+        
+        return render(request, 'appointment.html', context)
+
 
 
 from django.shortcuts import render
 from userapp.models import Appointment
 
 def view_appointment(request):
-    # Assuming the mentor is linked to the Django User model
     mentor = request.user  # Assuming the logged-in user is the mentor
-    
-    # Filter appointments for the logged-in mentor
     appointments = Appointment.objects.filter(mentor=mentor)
-    
-    return render(request, 'view_appointment.html', {'appointments': appointments})
+    # Get the list of cancelled dates and times
+    cancelled_dates = Appointment.objects.filter(cancelled=True).values_list('date', flat=True)
+    cancelled_times = Appointment.objects.filter(cancelled=True).values_list('time', flat=True)
+    return render(request, 'view_appointment.html', {'appointments': appointments, 'cancelled_dates': cancelled_dates, 'cancelled_times': cancelled_times})
+
+
 
 from django.shortcuts import render
 from userapp.models import Appointment
-
 def appointment_userview(request):
-    # Assuming the logged-in user is associated with the appointments
     user = request.user
+    # Retrieve all appointments for the user
     appointments = Appointment.objects.filter(user=user)
-    return render(request, 'appointment_userview.html', {'appointments': appointments})
+    print(appointments)
+    # Retrieve cancelled appointments for the user
+    cancelled_appointments = appointments.filter(cancelled=True)
+    # Extract cancelled dates and times
+    cancelled_dates = cancelled_appointments.values_list('date', flat=True)
+    cancelled_times = cancelled_appointments.values_list('time', flat=True)
+    # Pass all appointments and cancelled dates/times to the template
+    return render(request, 'appointment_userview.html', {'appointments': appointments, 'cancelled_dates': cancelled_dates, 'cancelled_times': cancelled_times})
+
+
+
+from django.shortcuts import redirect, get_object_or_404
+from userapp.models import Appointment
+
+def cancel_appointment(request, appointment_id):
+ appointment = get_object_or_404(Appointment, pk=appointment_id)
+ appointment.cancelled = True
+ appointment.save()
+ return redirect('view_appointment')
+
+
+
+from django.shortcuts import render
+from userapp.models import Slots
+
+def bookedslot(request):
+    mentor_id = request.user.id
+    booked_slots = Slots.objects.filter(mentor_id=mentor_id, cancelled=False)
+    cancelled_slots = Slots.objects.filter(mentor_id=mentor_id, cancelled=True)
+    print(booked_slots)
+    return render(request, 'bookedslot.html', {'booked_slots': booked_slots, 'cancelled_slots': cancelled_slots})
+
+
+
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from userapp.models import Slots
+from django.http import JsonResponse
+from twilio.rest import Client
+
+def cancel_slot(request, slot_id):
+    if request.method == 'GET':
+        try:
+            slot = Slots.objects.get(id=slot_id)
+            slot.cancelled = True
+            slot.save()
+
+            # Initialize Twilio client with your Twilio account SID and auth token
+            client = Client("AC92d60b381a5001f92b074412190efa89", "335cae33bcbfc947dceec5019608fde4")
+
+            # Replace 'from_' with your Twilio phone number and 'to' with the user's phone number
+            message = client.messages.create(
+                body="Your appointment slot has been cancelled.",
+                from_="+14155238886",
+                to="9400453044"
+            )
+
+            return JsonResponse({'success': True})
+        except Slots.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Slot not found'}, status=404)
+    return JsonResponse({'success': False, 'error': 'Invalid request method or missing slot_id'}, status=400)

@@ -12,13 +12,13 @@
                     <div class="card-body">
                         <h5 class="card-title">Ordered Date: {{ order.date_ordered }}</h5>
 
-                        {% for order_item in order.orderitem_set.all %}
+                        {% for order_item in order_items_dict.order %}
                             <div class="row">
                                 <div class="col-md-2">
                                     <img src="{{ order_item.product.imageURL }}" alt="{{ order_item.product.name }}" class="img-fluid">
                                 </div>
                                 <div class="col-md-6">
-                                    <p>{{ order_item.product.name }}</p>
+                                    <p>Product: </p>
                                     <p>Quantity: {{ order_item.quantity }}</p>
                                     <p>Price: ${{ order_item.product.price }}</p>
                                 </div>

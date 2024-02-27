@@ -1,0 +1,225 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Booked Time Slots - AssistiveGlobe</title>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            background-color: #009688;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .site-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            margin-left: auto;
+        }
+
+        li {
+            margin: 0 15px;
+        }
+
+        a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #f0f0f0;
+        }
+
+        .booked-slots-section {
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 32px;
+            color: #009688;
+            font-weight: bold;
+        }
+
+        .booked-slots-list {
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #009688;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        .cancel-btn {
+            background-color: #dc3545;
+            color: #fff;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .cancel-btn:hover {
+            background-color: #c82333;
+        }
+        .cancelled-btn {
+            background-color: #d65050; /* Change the background color for cancelled button */
+            color: #fff; /* Text color */
+            padding: 8px 16px; /* Adjust padding */
+            border: none; /* Remove border */
+            border-radius: 4px; /* Add border radius */
+            cursor: not-allowed; /* Change cursor to not-allowed for cancelled button */
+            transition: background-color 0.3s; /* Add transition effect */
+            opacity: 0.7; /* Reduce opacity for cancelled button */
+        }
+
+        .cancelled-btn:hover {
+            background-color: #c82333; /* Darker shade on hover */
+        }
+
+        footer {
+            background-color: #009688;
+            color: #fff;
+            text-align: center;
+            padding: 15px 0;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="site-name">AssistiveGlobe</div>
+        <ul>
+            <li><a href="{%  url 'mentor1' %}">Home</a></li>
+            <li><a href="#">Welcome, {{ user.name }}</a></li>
+            <li><a href="{%  url 'logout' %}">Logout</a></li>
+        </ul>
+    </nav>
+
+    <section class="booked-slots-section">
+        <div class="container">
+            <h2>Booked Time Slots</h2>
+            <div class="booked-slots-list">
+                {% if booked_slots %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Date</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for slot in booked_slots %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ slot.date }}</td>
+                                    <td>{{ slot.start_time}}</td>
+                                    <td>{{ slot.end_time}}</td>
+                                    <td>
+                                        <button type="submit" class="cancel-btn" data-slot-id="{{ slot.id }}">Cancel</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No booked time slots</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const cancelButtons = document.querySelectorAll('.cancel-btn');
+        cancelButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const slotId = this.getAttribute('data-slot-id');
+            const buttonElement = this; // Reference to the button element
+
+            if (confirm("Are you sure you want to cancel this time slot?")) {
+                // Send AJAX request to cancel the slot
+                fetch(`/cancel_slot/${slotId}/`, {
+                        method: 'GET'
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Update button text and disable it after successful cancellation
+                            buttonElement.textContent = 'Cancelled';
+                            buttonElement.classList.remove('cancel-btn'); // Remove cancel-btn class
+                            buttonElement.classList.add('cancelled-btn'); // Add new class for cancelled button
+                            buttonElement.disabled = true;
+                        } else {
+                            // Handle error response
+                            console.error('Error cancelling slot:', response.statusText);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error cancelling slot:', error);
+                    });
+            }
+        });
+    });
+});
+</script>    
+      <footer>
+        &copy; AssistiveGlobe 2023
+    </footer>
+</body>
+
+</html>

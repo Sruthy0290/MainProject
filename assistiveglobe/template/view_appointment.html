@@ -106,16 +106,28 @@
         tr:hover {
             background-color: #ddd;
         }
-
+        .cancel-btn {
+            background-color: #dc3545; /* Red color */
+            color: #fff; /* White text */
+            padding: 8px 16px; /* Padding for button */
+            border: none; /* Remove default border */
+            border-radius: 4px; /* Rounded corners */
+            cursor: pointer; /* Cursor style */
+            transition: background-color 0.3s; /* Smooth transition for hover effect */
+        }
+        .cancel-btn:hover {
+            background-color: #c82333; /* Darker shade of red on hover */
+        }
         footer {
             background-color: #009688;
             color: #fff;
             text-align: center;
             padding: 15px 0;
-            position: absolute;
+            position: fixed;
             bottom: 0;
             width: 100%;
         }
+
     </style>
 </head>
 
@@ -123,8 +135,9 @@
     <nav>
         <div class="site-name">AssistiveGlobe</div>
         <ul>
-            <li><a href="{% url 'mentor1' %}">Home</a></li>
-            <li><a href="{% url 'logout' %}">Logout</a></li>
+            <li><a href="{%  url 'mentor1' %}">Home</a></li>
+            <li><a href="#">Welcome, {{ user.name }}</a></li>
+            <li><a href="{%  url 'logout' %}">Logout</a></li>
         </ul>
     </nav>
 
@@ -138,9 +151,9 @@
                             <tr>
                                 <th>No</th>
                                 <th>User</th>
-                                <th>Mentor</th>
                                 <th>Date</th>
                                 <th>Time</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -148,9 +161,19 @@
                                 <tr>
                                     <td>{{ forloop.counter }}</td>
                                     <td>{{ appointment.user }}</td>
-                                    <td>{{ appointment.mentor }}</td>
                                     <td>{{ appointment.date }}</td>
-                                    <td>{{ appointment.time }}</td>
+                                    <td>{{ appointment.time}}</td>
+
+                                    <td>
+                                        {% if appointment.cancelled %}
+                                            <span style="color: red;">Cancelled</span>
+                                        {% else %}
+                                            <form action="{% url 'cancel_appointment' appointment.id %}" method="post">
+                                                {% csrf_token %}
+                                                <button type="submit" class="cancel-btn">Cancel</button>
+                                            </form>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>

@@ -17,6 +17,8 @@
             background-image: url('{% static "images/appoint.jpg" %}');
             background-size: cover;
             background-position: center;
+            min-height: 100vh; /* Ensure the body covers the full viewport height */
+            position: relative; /* Position the footer relative to the body */
         }
 
         nav {
@@ -64,7 +66,7 @@
             margin-top: 20px;
             border-radius: 8px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            min-height: 100vh; /* Set a minimum height to push the footer to the bottom */
+            min-height: calc(100vh - 90px); /* Subtract the height of the footer and navbar */
         }
 
         h2 {
@@ -106,7 +108,7 @@
         tr:hover {
             background-color: #ddd;
         }
-
+        
         footer {
             background-color: #009688;
             color: #fff;
@@ -123,7 +125,8 @@
     <nav>
         <div class="site-name">AssistiveGlobe</div>
         <ul>
-            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="#">Welcome, {{ user.name }}</a></li>
+            <li><a href="{% url 'mentorindex' %}">Home</a></li>
             <li><a href="{% url 'logout' %}">Logout</a></li>
         </ul>
     </nav>
@@ -140,6 +143,7 @@
                                 <th>Mentor</th>
                                 <th>Date</th>
                                 <th>Time</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -148,7 +152,14 @@
                                     <td>{{ forloop.counter }}</td>
                                     <td>{{ appointment.mentor }}</td>
                                     <td>{{ appointment.date }}</td>
-                                    <td>{{ appointment.time }}</td>
+                                    <td>{{ appointment.time|time:"h:i A" }}</td>
+                                    <td>
+                                        {% if appointment.date in cancelled_dates and appointment.time in cancelled_times %}
+                                            <span style="color: red;">Cancelled</span>
+                                        {% else %}
+                                        <span style="color: rgb(28, 181, 51);">Booked</span>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>

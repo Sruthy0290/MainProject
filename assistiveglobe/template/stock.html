@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Management</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .navbar {
+            background-color: #343a40;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 24px;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .navbar a {
+            padding: 10px 20px;
+            text-decoration: none;
+            display: inline-block;
+            color: #fff;
+        }
+
+        .navbar a:hover {
+            background-color: #555;
+            border-radius: 5px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{% url 'dashboard' %}">Admin Panel</a>
+        <div class="form-inline my-2 my-lg-0">
+            <a href="{% url 'logout' %}" class="btn btn-warning mr-2">Logout</a>
+        </div>       
+    </div>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Stock Management</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>ID</th>
+                        <th>Stock</th>
+                        <th>Update Stock</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td><img src="{{ product.imageURL }}" alt="{{ product.name }}" class="img-fluid" style="max-width: 100px;"></td>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.id }}</td>
+                        <td>{{ product.stock }}</td>
+                        <td>
+                            <form method="post" action="{% url 'update_stock' product.id %}">
+                                {% csrf_token %}
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="stock" name="stock" min="0" required>
+                                    <div class="input-group-append">
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        // Ensure the form submits correctly
+        document.addEventListener("DOMContentLoaded", function () {
+            var updateButtons = document.querySelectorAll('.update-btn');
+            updateButtons.forEach(function (button) {
+                button.addEventListener('click', function (event) {
+                    var form = button.closest('form');
+                    var stockInput = form.querySelector('input[type="number"]');
+                    var stockValue = parseInt(stockInput.value);
+                    if (stockValue >= 0) {
+                        form.submit();
+                    } else {
+                        alert('Stock value must be a non-negative number.');
+                        event.preventDefault(); // Prevent form submission
+                    }
+                });
+            });
+        });
+    </script>    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

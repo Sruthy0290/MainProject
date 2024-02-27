@@ -205,10 +205,12 @@ sorted_products = {category[0]: Product.objects.filter(category=category[0]) for
 class Slots(models.Model):
     mentor = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     date = models.DateField(null=True, blank=True)
-    start_time = models.TimeField()
-    end_time = models.TimeField()
+    start_time = models.CharField(max_length=10, null=True)  # Change to CharField
+    end_time = models.CharField(max_length=10, null=True)    # Change to CharField
+    cancelled = models.BooleanField(default=False)
    
     def __str__(self):
+        status = "Cancelled" if self.cancelled else "Active"
         return f"Slot for Dr. {self.mentor.name} on {self.date} at {self.start_time}-{self.end_time}"
 
 
@@ -216,10 +218,13 @@ class Slots(models.Model):
 class Appointment(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     date = models.DateField(null=True)
-    time = models.TimeField(null=True)
+    time = models.CharField(max_length=10,null=True)
     mentor = models.CharField(max_length=50)
+    cancelled = models.BooleanField(default=False)
     
 
     def __str__(self):
-        return f"{self.user} - {self.date} {self.time}"
+        return f"{self.user} - {self.date}"
+    
 
+  

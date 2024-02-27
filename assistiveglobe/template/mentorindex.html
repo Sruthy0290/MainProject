@@ -156,54 +156,30 @@
   <!-- ======= Header ======= -->
   <header id="header" class="fixed-top">
     <div class="container d-flex align-items-center">
-
-      <h1 class="logo me-auto"><a href="mentorindex.html">AssistiveGlobe</a></h1>
-      <!-- Uncomment below if you prefer to use an image logo -->
-      <!-- <a href="index.html" class="logo me-auto"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
-
-      <nav id="navbar" class="navbar order-last order-lg-0">
-        <ul>
-          <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
-          {% comment %} <li><a class="nav-link scrollto" href="{% url 'product' %}">Products</a></li> {% endcomment %}
-          <li><a class="nav-link scrollto" href="#services">Services</a></li>
-          <li><a class="nav-link scrollto" href="#departments">Types of Mentoring</a></li>
-          <li><a class="nav-link scrollto" href="#doctors">Mentors</a></li>
-          <li><a class="nav-link" href="{% url 'product' %}">Product</a></li>
-          <li><a class="nav-link" href="{% url 'home' %}">Main Page</a></li>
-          {% comment %} <li class="dropdown"><a href="#"><span>Drop Down</span> <i class="bi bi-chevron-down"></i></a>
-            <ul> {% endcomment %}
-              {% comment %} <li><a href="#">Drop Down 1</a></li>
-              <li class="dropdown"><a href="#"><span>Deep Drop Down</span> <i class="bi bi-chevron-right"></i></a>
-                <ul>
-                  <li><a href="#">Deep Drop Down 1</a></li>
-                  <li><a href="#">Deep Drop Down 2</a></li>
-                  <li><a href="#">Deep Drop Down 3</a></li>
-                  <li><a href="#">Deep Drop Down 4</a></li>
-                  <li><a href="#">Deep Drop Down 5</a></li>
-                </ul>
-              </li>
-              <li><a href="#">Drop Down 2</a></li>
-              <li><a href="#">Drop Down 3</a></li>
-              <li><a href="#">Drop Down 4</a></li>
-            </ul> {% endcomment %}
-          {% comment %} </li> {% endcomment %}
-          
-          {% comment %} <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
-        </ul>
-        <i class="bi bi-list mobile-nav-toggle"></i> {% endcomment %}
-      </nav><!-- .navbar -->
-
-      <a href="{% url 'appointment' %}" class="appointment-btn">
-        <span class="d-none d-md-inline">Make an</span> Appointment
-    </a>
-
-    <a href="{% url 'appointment_userview' %}" class="appointment-btn">
-      <span class="d-none d-md-inline">View</span> Appointment
-  </a>
-    
-
+        <h1 class="logo me-auto"><a href="mentorindex.html">AssistiveGlobe</a></h1>
+        <nav id="navbar" class="navbar order-last order-lg-0">
+            <ul>
+                <li><a class="nav-link active" href="{% url 'home' %}">Home</a></li>
+                <li><a class="nav-link" href="{% url 'product' %}">Product</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Welcome, {{ user.name }}</a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <!-- .navbar -->
+        <a href="{% url 'appointment' %}" class="appointment-btn">
+            <span class="d-none d-md-inline">Make an</span> Appointment
+        </a>
+        <a href="{% url 'appointment_userview' %}" class="appointment-btn">
+            <span class="d-none d-md-inline">View</span> Appointment
+        </a>
     </div>
-  </header><!-- End Header -->
+</header>
+
+  <!-- End Header -->
 
   <!-- ======= Hero Section ======= -->
   <section id="hero" class="d-flex align-items-center">
@@ -541,20 +517,20 @@
    
 
     <!-- ======= Contact Section ======= -->
-    <section id="contact" class="contact">
+    {% comment %} <section id="contact" class="contact">
       <div class="container">
 
         <div class="section-title">
-          <h2>Contact</h2>
+          <h2>Contact</h2> {% endcomment %}
           <!-- <p>Magnam dolores commodi suscipit. Necessitatibus eius consequatur ex aliquid fuga eum quidem. Sit sint consectetur velit. Quisquam quos quisquam cupiditate. Et nemo qui impedit suscipit alias ea. Quia fugiat sit in iste officiis commodi quidem hic quas.</p> -->
-        </div>
-      </div>
+        {% comment %} </div>
+      </div> {% endcomment %}
 
       <!-- <div>
         <iframe style="border:0; width: 100%; height: 350px;" src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d12097.433213460943!2d-74.0062269!3d40.7101282!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xb89d1fe6bc499443!2sDowntown+Conference+Center!5e0!3m2!1smk!2sbg!4v1539943755621" frameborder="0" allowfullscreen></iframe>
       </div> -->
 
-      <div class="container">
+      {% comment %} <div class="container">
         <div class="row mt-5">
 
           <div class="col-lg-4">
@@ -579,9 +555,9 @@
 
             </div>
 
-          </div>
+          </div> {% endcomment %}
 
-          <div class="col-lg-8 mt-5 mt-lg-0">
+          {% comment %} <div class="col-lg-8 mt-5 mt-lg-0">
 
             <form action="forms/contact.php" method="post" role="form" class="php-email-form">
               <div class="row">
@@ -606,12 +582,12 @@
               <div class="text-center"><button type="submit">Send Message</button></div>
             </form>
 
-          </div>
+          </div> {% endcomment %}
 
-        </div>
+        {% comment %} </div>
 
       </div>
-    </section>
+    </section> {% endcomment %}
     <!-- End Contact Section -->
 
   </main><!-- End #main -->
