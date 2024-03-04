@@ -118,6 +118,14 @@
             bottom: 0;
             width: 100%;
         }
+        .zoom-link-button {
+            display: inline-block;
+            padding: 8px 16px;
+            color: rgb(60, 197, 234);
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
     </style>
 </head>
 
@@ -143,6 +151,7 @@
                                 <th>Mentor</th>
                                 <th>Date</th>
                                 <th>Time</th>
+                                <th>Meeting Link</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -152,7 +161,10 @@
                                     <td>{{ forloop.counter }}</td>
                                     <td>{{ appointment.mentor }}</td>
                                     <td>{{ appointment.date }}</td>
-                                    <td>{{ appointment.time|time:"h:i A" }}</td>
+                                    <td>{{ appointment.time}}</td>
+                                    <td>
+                                        <a href="{{ appointment.zoom_link }}" target="_blank" class="zoom-link-button ">Open Zoom</a>
+                                    </td>
                                     <td>
                                         {% if appointment.date in cancelled_dates and appointment.time in cancelled_times %}
                                             <span style="color: red;">Cancelled</span>

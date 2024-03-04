@@ -68,6 +68,7 @@ urlpatterns = [
 
     path('paymenthandler/<int:amount>', v.paymenthandler, name='paymenthandler'),
     path('payment/<int:amt>',v.payment,name="payment"),
+    path('payment/<int:product_id>',v.payment,name="payment"),
 
     path('add_to_wishlist/<int:product_id>/', v.add_to_wishlist, name='add_to_wishlist'),
     path('wishlist/', v.wishlist, name='wishlist'),
@@ -91,6 +92,7 @@ urlpatterns = [
     path('bookedslot/', v.bookedslot, name='bookedslot'),
     path('cancel_slot/<int:slot_id>/', v.cancel_slot, name='cancel_slot'),
     path('get_available_times/', v.get_available_times, name='get_available_times'),
+    path('get_user_appointments/',v.get_user_appointments, name='get_user_appointments'),
     
     
 

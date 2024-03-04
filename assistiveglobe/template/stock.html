@@ -85,14 +85,14 @@
     <script>
         // Ensure the form submits correctly
         document.addEventListener("DOMContentLoaded", function () {
-            var updateButtons = document.querySelectorAll('.update-btn');
+            var updateButtons = document.querySelectorAll('form button[type="submit"]');
             updateButtons.forEach(function (button) {
                 button.addEventListener('click', function (event) {
                     var form = button.closest('form');
                     var stockInput = form.querySelector('input[type="number"]');
                     var stockValue = parseInt(stockInput.value);
                     if (stockValue >= 0) {
-                        form.submit();
+                        // Form will be submitted normally
                     } else {
                         alert('Stock value must be a non-negative number.');
                         event.preventDefault(); // Prevent form submission
@@ -100,7 +100,7 @@
                 });
             });
         });
-    </script>    
+    </script>     
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

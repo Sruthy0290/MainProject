@@ -1,8 +1,3 @@
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,8 +64,6 @@
             margin-top: 20px;
         }
 
-        
-       
         .add-to-cart-form .form-group {
             margin-bottom: 20px;
         }
@@ -98,45 +91,56 @@
         .add-to-cart-form .btn-primary:hover {
             background-color: #0056b3;
         }
+
         .messages {
-    margin: 20px 0;
-}
+            margin: 20px 0;
+        }
 
-.messages ul {
-    padding: 0;
-}
+        .messages ul {
+            padding: 0;
+        }
 
-.messages li {
-    list-style: none;
-    margin-bottom: 10px;
-    padding: 10px 15px;
-    border-radius: 4px;
-}
+        .messages li {
+            list-style: none;
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border-radius: 4px;
+        }
 
-.messages .alert-success {
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-    color: #155724;
-}
+        .messages .alert-success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
 
-.messages .alert-info {
-    background-color: #cce5ff;
-    border-color: #b8daff;
-    color: #004085;
-}
+        .messages .alert-info {
+            background-color: #cce5ff;
+            border-color: #b8daff;
+            color: #004085;
+        }
 
-.messages .alert-warning {
-    background-color: #fff3cd;
-    border-color: #ffeeba;
-    color: #856404;
-}
+        .messages .alert-warning {
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+            color: #856404;
+        }
 
-.messages .alert-danger {
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    color: #721c24;
-}
+        .messages .alert-danger {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
 
+        /* Animation for left stock message */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .left-stock-message {
+            animation: pulse 1s infinite;
+        }
     </style>
 </head>
 <body>
@@ -150,8 +154,7 @@
             {% endfor %}
         </ul>
     </div>
-{% endif %}
-
+    {% endif %}
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="{% url 'home' %}">Home</a>
@@ -159,7 +162,6 @@
         <a class="navbar-brand" href="{% url 'cart' %}">Cart</a>
         <a class="navbar-brand" href="{% url 'wishlist' %}">Wishlist</a>
         <a class="navbar-brand" href="{% url 'order_history' %}">Order History</a>
-        
     </nav>
     
     <div class="container">
@@ -172,11 +174,16 @@
                 <p><strong>Price:</strong> Rs {{ product.price|floatformat:2 }}</p>
                 <p><strong>Description:</strong> {{ product.description }}</p>
 
+                {% if product.stock > 0 and product.stock <= 5 %}
+                    <p class="text-danger left-stock-message">Hurry, only {{ product.stock }} left!</p>
+                {% endif %}
+
                 <form class="add-to-cart-form" method="POST" action="{% url 'add_to_cart' product.id %}">
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="quantity">Quantity:</label>
-                        <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1">
+                        <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1" max="{{ product.stock }}">
+                        <!-- Set the max attribute to the available stock -->
                     </div>
                     {% if user.is_authenticated and not user.is_superuser %}
                         <button type="submit" class="btn btn-primary">Add to Cart</button>
@@ -192,13 +199,9 @@
             </div>
         </div>
     </div>
-    
 
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.11/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 </body>
 </html>
-
-
-

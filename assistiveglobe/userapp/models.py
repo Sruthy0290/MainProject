@@ -143,12 +143,14 @@ class Order(models.Model):
         return total  
 
   
+from django.utils import timezone
+
 
 class OrderItem(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     order = models.ForeignKey(Order, on_delete=models.SET_NULL,null=True)
-    quantity = models.IntegerField(default=1)
-    date_added = models.DateTimeField(auto_now_add=True)
+    quantity = models.IntegerField(default=0, null=True, blank=True)
+    date_added = models.DateTimeField(default=timezone.now)
 
     @property
     def get_total(self):
@@ -163,6 +165,7 @@ class OrderItem(models.Model):
             url = ''
         return url
     
+
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -221,6 +224,8 @@ class Appointment(models.Model):
     time = models.CharField(max_length=10,null=True)
     mentor = models.CharField(max_length=50)
     cancelled = models.BooleanField(default=False)
+    zoom_link = models.URLField(max_length=200, blank=True, null=True)  # Field for Zoom link
+
     
 
     def __str__(self):

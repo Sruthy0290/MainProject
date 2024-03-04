@@ -127,6 +127,13 @@
             bottom: 0;
             width: 100%;
         }
+        .zoom-link-button {
+            display: inline-block;
+            padding: 8px 16px;
+            color: rgb(60, 197, 234);
+            text-decoration: none;
+            border-radius: 4px;
+        }
 
     </style>
 </head>
@@ -153,6 +160,7 @@
                                 <th>User</th>
                                 <th>Date</th>
                                 <th>Time</th>
+                                <th>Meeting Link</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -163,6 +171,9 @@
                                     <td>{{ appointment.user }}</td>
                                     <td>{{ appointment.date }}</td>
                                     <td>{{ appointment.time}}</td>
+                                    <td>
+                                        <a href="{{ appointment.zoom_link }}" target="_blank" class="zoom-link-button ">Open Zoom</a>
+                                    </td>
 
                                     <td>
                                         {% if appointment.cancelled %}

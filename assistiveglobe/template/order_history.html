@@ -1,38 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Order History</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Custom styles -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .card {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+        }
+        .card-title {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .card-text {
+            margin-top: 20px;
+            margin-bottom: 0;
+        }
+        .text-success {
+            color: #28a745;
+        }
+        .text-danger {
+            color: #dc3545;
+        }
+        .img-fluid {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        nav {
+            background-color: #343a40;
+            color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .site-name {
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .navbar-nav .nav-link {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand site-name" href="#">AssistiveGlobe</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">Home</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Welcome, {{ user.name }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
-{% block content %}
     <div class="container mt-5">
-        <h2>Your Order History</h2>
+        <h2 class="text-center mb-4">Your Order History</h2>
 
         {% if orders %}
             {% for order in orders %}
-                <div class="card mb-3">
-                    <div class="card-header">
-                        Order Number: {{ order.id }}
-                    </div>
+                <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Ordered Date: {{ order.date_ordered }}</h5>
+                        <h5 class="card-title">Ordered Date: {{ order.date_ordered|date:"F d, Y" }}</h5>
 
-                        {% for order_item in order_items_dict.order %}
-                            <div class="row">
-                                <div class="col-md-2">
+                        {% for order_item in order.orderitem_set.all %}
+                            <div class="row mb-3">
+                                <div class="col-md-3">
                                     <img src="{{ order_item.product.imageURL }}" alt="{{ order_item.product.name }}" class="img-fluid">
                                 </div>
-                                <div class="col-md-6">
-                                    <p>Product: </p>
-                                    <p>Quantity: {{ order_item.quantity }}</p>
-                                    <p>Price: ${{ order_item.product.price }}</p>
+                                <div class="col-md-9">
+                                    <p><strong>Product:</strong> {{ order_item.product.name }}</p>
+                                    <!-- <p><strong>Quantity:</strong> {{ order_item.product.quantity}}</p> -->
+                                    <p><strong>Price:</strong> Rs.{{ order_item.product.price }}</p>
+                                    <p class="card-text"><strong>Payment Status:</strong> {% if order.complete %}<span class="text-success">Paid</span>{% else %}<span class="text-danger">Pending</span>{% endif %}</p>
                                 </div>
                             </div>
                             <hr>
                         {% endfor %}
-
-                        <p class="card-text">Total: ${{ order.get_cart_total }}</p>
-                        <p class="card-text">Payment Status: {% if order.complete %}Paid{% else %}Pending{% endif %}</p>
                     </div>
                 </div>
             {% endfor %}
         {% else %}
-            <p>No order history available.</p>
+            <div class="alert alert-info" role="alert">
+                No order history available.
+            </div>
         {% endif %}
     </div>
-{% endblock %}
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -252,12 +252,6 @@ def product_detail(request, product_id):
 
 
 
-# def product_management(request):
-#     products = Product.objects.all()  # Query all products
-#     context = {
-#         'products': products
-#     }
-#     return render(request, 'dashboard.html', context)
 
 
 @login_required
@@ -391,7 +385,7 @@ def checkout(request, amt):
         'district': district,
         'amt': amt,
         'cart_items': cart_items,  # Add cart items to context
-        'sorted_products': sorted_products  # Add sorted products to context
+        'sorted_products': sorted_products,  # Add sorted products to context
     }
 
     return render(request, 'checkout.html', context)
@@ -479,7 +473,6 @@ def update_stock(request, product_id):
 
 
 
-
 from django.shortcuts import render
 import razorpay
 from django.conf import settings
@@ -496,16 +489,21 @@ from django.http import HttpResponseBadRequest
 def payment(request,amt):
     currency = 'INR'
     amount = amt*100 # Rs. 200
-
+    
     razorpay_order = razorpay_client.order.create(dict(amount=amount,currency=currency,payment_capture='0'))
     razorpay_order_id = razorpay_order['id']
     callback_url = '/paymenthandler/'+str(amount)
 
-    order=Order.objects.create(
+    cartitems=CartItem.objects.filter(user=request.user)
+    for i in cartitems:
+        order=Order.objects.create(
         user=request.user,
         razorpay_order_id=razorpay_order_id,
+        product_id=i.product_id
+        )
+        order.save()
+    cartitems.delete()
 
-    )
 
 
     amount=amount/100
@@ -545,12 +543,19 @@ def paymenthandler(request, amount):
             razorpay_client.payment.capture(payment_id, amount)
 
             # Find the order related to this payment
-            order = Order.objects.get(razorpay_order_id=razorpay_order_id)
+            order = Order.objects.filter(razorpay_order_id=razorpay_order_id)
 
             # Update the order with the payment_id
-            order.transaction_id = payment_id
-            order.complete = True
-            order.save()
+            for i in order:
+                i.transaction_id = payment_id
+                i.complete = True
+                i.save()
+                OrderItem(
+                    order_id=i.id,
+                    product_id=i.product_id,
+                    quantity = i.quantity,
+                    date_added=timezone.now()
+                ).save()
 
             return redirect('order_history')
         else:
@@ -636,26 +641,6 @@ def product_search(request):
 
 from django.shortcuts import render
 from userapp.models import Order,Product
-
-# def order_history(request):
-#     if request.user.is_authenticated:
-#         # Filter completed orders for the logged-in user
-#         orders = Order.objects.filter(user=request.user, complete=True)
-
-#         # Retrieve associated OrderItems for each order
-#         order_items = OrderItem.objects.filter(order__in=orders)
-#         print(order_items)
-#     else:
-#         orders = []
-#         order_items = []
-
-#     context = {
-#         'orders': orders,
-#         'order_items': order_items,
-#     }
-
-#     return render(request, 'order_history.html', context)
-
 def order_history(request):
     if request.user.is_authenticated:
         # Filter completed orders for the logged-in user
@@ -856,35 +841,71 @@ def check_mentor_availability(request):
 from django.shortcuts import render, redirect
 from userapp.models import CustomUser
 from userapp.models import Appointment
+from django.contrib import messages
 from datetime import datetime
+
+def generate_zoom_link():
+    # Replace these with your Zoom API credentials
+    api_key = "R3Xmzt5kTwSBiDR62xcz9w"
+    api_secret = "35E4VqVqeveFLNXOdtLRWPNy3HYmlKpA"
+
+    # Generate a random meeting ID using the secrets module
+    meeting_id = "6300709403"
+
+    # Construct the Zoom link
+    zoom_link = f"https://zoom.us/j/{meeting_id}?pwd={api_secret}&api_key={api_key}"
+
+    return zoom_link
 
 def appointment(request):
     mentors = CustomUser.objects.filter(role=2)  # Assuming 'role=2' represents mentors
     context = {'mentors': mentors}
+    
     if request.method == 'POST':
         # If the form is submitted
+        user = request.user  # Assuming request.user is the logged-in user
         name = request.POST.get('name')
         mobile = request.POST.get('mobile')
         mentor_id = request.POST.get('mentor')
         appointment_date = request.POST.get('appointment_date')
         appointment_time = request.POST.get('appointment_time')
-        
-        
-        # Retrieve the mentor object
+
         mentor = CustomUser.objects.get(id=mentor_id)
-
-        # Create a new appointment object
-        appointment = Appointment(
-            user=request.user,  # Assuming request.user is the logged-in user
+        
+        # Check if an appointment with the same user, mentor, date, and time already exists
+        existing_appointment = Appointment.objects.filter(
+            # user=user,
+            mentor=mentor,
             date=appointment_date,
-            time=appointment_time,
-            mentor=mentor
-        )
-        # Save the appointment to the database
-        appointment.save()
+            time=appointment_time
+        ).exists()
+        
+        if existing_appointment:
+            # If an existing appointment is found, show a warning message
+            messages.warning(request, 'An appointment with the same mentor, date, and time already exists.')
+            return redirect('appointment')
+        else:
+            # If no existing appointment found, proceed with creating the appointment
+            zoom_link = generate_zoom_link()
+            print(mentor_id)
+            print(zoom_link)
 
-        # Optionally, you can redirect the user to a success page
-        return redirect('mentorindex')
+            # Retrieve the mentor object
+            mentor = CustomUser.objects.get(id=mentor_id)
+
+            # Create a new appointment object
+            appointment = Appointment(
+                user=user,
+                date=appointment_date,
+                time=appointment_time,
+                mentor=mentor,
+                zoom_link=zoom_link
+            )
+            # Save the appointment to the database
+            appointment.save()
+
+            # Optionally, you can redirect the user to a success page
+            return redirect('mentorindex')
     else:
         # If it's a GET request, retrieve mentors from the database
         mentors = CustomUser.objects.all()
@@ -895,10 +916,10 @@ def appointment(request):
         context['cancelled_dates'] = cancelled_dates
         context['cancelled_times'] = cancelled_times
         return render(request, 'appointment.html', context)
-
     
 
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from userapp.models import CustomUser, Appointment
 
 def make_appointment(request):
@@ -909,7 +930,7 @@ def make_appointment(request):
         mentor_id = request.POST.get('mentor')
         appointment_date = request.POST.get('appointment_date')
         appointment_time = request.POST.get('appointment_time')
-        print(appointment_time)
+        print(mentor_id)
         
         # Retrieve the mentor object
         mentor = CustomUser.objects.get(id=mentor_id)
@@ -980,12 +1001,23 @@ def appointment_userview(request):
 
 from django.shortcuts import redirect, get_object_or_404
 from userapp.models import Appointment
-
+from twilio.rest import Client
 def cancel_appointment(request, appointment_id):
- appointment = get_object_or_404(Appointment, pk=appointment_id)
- appointment.cancelled = True
- appointment.save()
- return redirect('view_appointment')
+    appointment = get_object_or_404(Appointment, pk=appointment_id)
+    appointment.cancelled = True
+    appointment.save()
+
+    # Initialize Twilio client with your Twilio account SID and auth token
+    client = Client("AC92d60b381a5001f92b074412190efa89", "5835cdfc1e86b98e02c2dd4af81c135e")
+
+    # Replace 'from_' with your Twilio phone number and 'to' with the user's phone number
+    message = client.messages.create(
+        from_='whatsapp:+14155238886',
+        body="Your appointment has been cancelled.",
+        to='whatsapp:+919400453044'
+    )
+
+    return redirect('view_appointment')
 
 
 
@@ -1005,7 +1037,6 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from userapp.models import Slots
 from django.http import JsonResponse
-from twilio.rest import Client
 
 def cancel_slot(request, slot_id):
     if request.method == 'GET':
@@ -1013,18 +1044,17 @@ def cancel_slot(request, slot_id):
             slot = Slots.objects.get(id=slot_id)
             slot.cancelled = True
             slot.save()
-
-            # Initialize Twilio client with your Twilio account SID and auth token
-            client = Client("AC92d60b381a5001f92b074412190efa89", "335cae33bcbfc947dceec5019608fde4")
-
-            # Replace 'from_' with your Twilio phone number and 'to' with the user's phone number
-            message = client.messages.create(
-                body="Your appointment slot has been cancelled.",
-                from_="+14155238886",
-                to="9400453044"
-            )
-
             return JsonResponse({'success': True})
         except Slots.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Slot not found'}, status=404)
     return JsonResponse({'success': False, 'error': 'Invalid request method or missing slot_id'}, status=400)
+
+
+
+from django.shortcuts import render
+from userapp.models import Appointment
+
+def get_user_appointments(request, date):
+    user = request.user  # Assuming user is authenticated
+    user_appointments = Appointment.objects.filter(user=user, date=date).values_list('time', flat=True)
+    return JsonResponse({'appointments': list(user_appointments)})
