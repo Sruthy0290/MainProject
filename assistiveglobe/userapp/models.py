@@ -34,10 +34,12 @@ class UserManager(BaseUserManager):
 class CustomUser(AbstractUser):
     CLIENT = 1
     MENTOR = 2
+    DELIVERY = 3
 
     ROLE_CHOICE = (
         (CLIENT, 'Client'),
         (MENTOR, 'Mentor'),
+        (DELIVERY, 'Delivery'),
     )
 
     username=None

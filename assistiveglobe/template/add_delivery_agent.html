@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Mentor</title>
+    <title>Add Delivery Agent</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     
     <style>
-       body {
+        body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8f9fa;
             margin: 0;
@@ -37,8 +37,6 @@
             text-decoration: none;
             display: inline-block;
             color: #fff;
-            font-size: 18px;
-            font-weight: 500;
         }
 
         .navbar a:hover {
@@ -48,30 +46,33 @@
 
         .card {
             background-color: #fff;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            margin: 20px auto;
-            max-width: 500px;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            max-width: 500px; /* Adjusted max-width */
+            margin: 0 auto;
         }
 
         .mentor-form label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: bold;
         }
 
-        .mentor-form input {
+        .mentor-form input,
+        .mentor-form button {
             width: 100%;
             padding: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             box-sizing: border-box;
             border: 1px solid #ced4da;
-            border-radius: 8px;
+            border-radius: 5px;
             transition: border-color 0.3s;
         }
 
-        .mentor-form input:focus {
+        .mentor-form input:focus,
+        .mentor-form button:focus {
             border-color: #007bff;
             outline: none;
         }
@@ -85,23 +86,27 @@
         .add-mentor-button {
             background-color: #007bff;
             color: #fff;
-            padding: 12px 24px;
-            font-size: 16px;
+            padding: 10px 20px;
+            font-size: 14px;
             cursor: pointer;
             border: none;
-            border-radius: 8px;
+            border-radius: 5px;
             transition: background-color 0.3s;
         }
 
         .add-mentor-button:hover {
             background-color: #0056b3;
         }
+
         #toast-container {
             position: fixed;
-            bottom: 0;
-            right: 0;
-            padding: 3rem;
+            bottom: 20px; /* Adjusted position */
+            right: 20px; /* Adjusted position */
             z-index: 1000;
+        }
+
+        .container {
+            margin-top: 50px; /* Adjusted margin-top */
         }
 
     </style>
@@ -111,36 +116,42 @@
 
     <div class="navbar">
         <a href="{% url 'dashboard' %}">Admin Panel</a>
-        <h1>Add Mentor</h1>
+        <h1>Add Delivery Agent</h1>
         <div class="form-inline my-2 my-lg-0">
             <a href="{% url 'logout' %}" class="btn btn-warning mr-2">Logout</a>
         </div>       
     </div>
 
-    <div class="card">
-        <!-- Mentor Form -->
-        
-        <form class="mentor-form" id="mentor-form" method="post" action="{% url 'add_mentor' %}">
-            {% csrf_token %}
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" pattern="[A-Z][a-zA-Z\s]+ [A-Z][a-zA-Z\s]+" title="Enter a valid full name (start with capital letters)" required>
-            <div class="validation-message" id="name-validation-message"></div>
+    <div class="container"> <!-- Added container for better alignment -->
+        <div class="card">
+            <!-- Mentor Form -->
+            <form class="mentor-form" id="mentor-form" method="post" action="{% url 'add_delivery_agent' %}">
+                {% csrf_token %}
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" pattern="[A-Z][a-zA-Z\s]+ [A-Z][a-zA-Z\s]+" title="Enter a valid full name (start with capital letters)" required>
+                <div class="validation-message" id="name-validation-message"></div>
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Enter a valid email address" required>
-            <div class="validation-message" id="email-validation-message"></div>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Enter a valid email address" required>
+                <div class="validation-message" id="email-validation-message"></div>
 
-            <label for="phone">Phone Number:</label>
-            <input type="tel" id="phone" name="phone" pattern="[0-9]{10,}" title="Enter a valid phone number (at least 10 digits)" required>
-            <div class="validation-message" id="phone-validation-message"></div>
+                <label for="phone">Phone Number:</label>
+                <input type="tel" id="phone" name="phone" pattern="[0-9]{10,}" title="Enter a valid phone number (at least 10 digits)" required>
+                <div class="validation-message" id="phone-validation-message"></div>
 
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" pattern=".{6,}" title="Enter at least 6 characters" required>
-            <div class="validation-message" id="password-validation-message"></div>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" pattern=".{6,}" title="Enter at least 6 characters" required>
+                <div class="validation-message" id="password-validation-message"></div>
 
-            <button type="submit" class="add-mentor-button" onclick="submitForm()">Add Mentor</button>
-        </form>
+                <label for="driving-license">Driving License (PDF):</label>
+                <input type="file" id="driving-license" name="driving_license" accept=".pdf" required>
+                <div class="validation-message" id="driving-license-validation-message"></div>
+
+                <button type="submit" class="add-mentor-button">Add Delivery Agent</button>
+            </form>
+        </div>
     </div>
+
 
     <div id="toast-container" class="position-fixed bottom-0 end-0 p-3">
         <!-- Toasts will be appended here -->
@@ -218,6 +229,28 @@
         //updateSubmitButton();
         return true;
     }
+
+        function validateDrivingLicense() {
+        var drivingLicenseInput = document.getElementById("driving-license");
+        var validationMessage = document.getElementById("driving-license-validation-message");
+
+        if (!drivingLicenseInput.files[0]) {
+            validationMessage.textContent = "Please select a PDF file.";
+        } else if (drivingLicenseInput.files[0].type !== 'application/pdf') {
+            validationMessage.textContent = "Please select a PDF file.";
+        } else {
+            validationMessage.textContent = '';
+        }
+        return true;
+    }
+
+    document.getElementById('driving-license').addEventListener('change', function () {
+        validateDrivingLicense();
+        if (!this.files[0]) {
+            clearValidationMessage('driving-license');
+        }
+    });
+
 
     function clearValidationMessage(inputId) {
         document.getElementById(inputId + '-validation-message').textContent = '';

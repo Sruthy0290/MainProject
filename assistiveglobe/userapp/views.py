@@ -48,10 +48,7 @@ def signup(request):
                 return HttpResponseRedirect(reverse('signup') + '?alert=registered')
         else:
             return HttpResponseRedirect(reverse('signup') + '?alert=missing_fields')
-
-                
-            
-                
+         
 
     return render(request,'signup.html')
 
@@ -553,9 +550,11 @@ def paymenthandler(request, amount):
                 OrderItem(
                     order_id=i.id,
                     product_id=i.product_id,
-                    quantity = i.quantity,
                     date_added=timezone.now()
                 ).save()
+                prod=Product.objects.get(id=i.product_id)
+                prod.stock=prod.stock-1
+                prod.save()
 
             return redirect('order_history')
         else:
@@ -1058,3 +1057,41 @@ def get_user_appointments(request, date):
     user = request.user  # Assuming user is authenticated
     user_appointments = Appointment.objects.filter(user=user, date=date).values_list('time', flat=True)
     return JsonResponse({'appointments': list(user_appointments)})
+
+
+
+
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.contrib import messages
+from django.contrib.auth.hashers import make_password  # Import Django's password hashing function
+from .models import CustomUser
+
+def add_delivery_agent(request):
+    if request.method == 'POST':
+        # Get form data
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        raw_password = request.POST.get('password')  # Get the raw password
+        
+        # Hash the password
+        hashed_password = make_password(raw_password)
+        
+        # Save mentor details to the database
+        delivery = CustomUser(name=name, email=email, phone=phone, password=hashed_password, role=CustomUser.DELIVERY)
+        delivery.first_name = name
+        delivery.save()
+
+        # Send approval email
+        subject = 'Delivery Agent Approval'
+        message = f'Hello {name},\n\nYour delivery agent account has been approved. Use the following credentials to login:\n\nUsername: {email}\nPassword: {raw_password}\n\nThank you!'
+        from_email = 'assistiveglobe@gmail.com'  # Update with your admin email
+        recipient_list = [email]
+
+        send_mail(subject, message, from_email, recipient_list)
+
+        messages.success(request, 'Agent added successfully. Approval email sent.')
+        return redirect('dashboard')  # Redirect to the dashboard or any other desired page
+
+    return render(request, 'add_delivery_agent.html')  # Update with your actual template path

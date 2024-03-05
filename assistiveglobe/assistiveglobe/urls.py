@@ -95,6 +95,8 @@ urlpatterns = [
     path('get_user_appointments/',v.get_user_appointments, name='get_user_appointments'),
     
     
+    path('add_delivery_agent/', v.add_delivery_agent, name='add_delivery_agent'),
+
 
 
 
