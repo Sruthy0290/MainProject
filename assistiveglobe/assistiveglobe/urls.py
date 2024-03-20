@@ -99,6 +99,7 @@ urlpatterns = [
     
     path('add_delivery_agent/', v.add_delivery_agent, name='add_delivery_agent'),
     path('deliveryagent/', v.deliveryagent, name='deliveryagent'),
+    path('view_delivery_agent', v.view_delivery_agent, name='view_delivery_agent'),
     path('view_orders/', v.view_orders, name='view_orders'),
     path('current_delivery_tasks/', v.current_delivery_tasks, name='current_delivery_tasks'),
     path('accept_order/', v.accept_order, name='accept_order'),

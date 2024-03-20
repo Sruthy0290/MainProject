@@ -12,6 +12,9 @@ from userapp.models import  Product
 from django.shortcuts import render
 from assistiveglobe.forms import ProductForm,ProductUpdateForm
 from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.core.mail import send_mail
+
 
 
 
@@ -1104,11 +1107,13 @@ def get_user_appointments(request, date):
 
 
 
-from django.shortcuts import render, redirect
-from django.core.mail import send_mail
-from django.contrib import messages
 from django.contrib.auth.hashers import make_password  # Import Django's password hashing function
+# from django.contrib.auth.models import CustomUser
+from django.utils.crypto import get_random_string
 from userapp.models import CustomUser
+from django.contrib import messages
+from django.core.mail import send_mail
+
 
 def add_delivery_agent(request):
     if request.method == 'POST':
@@ -1116,28 +1121,57 @@ def add_delivery_agent(request):
         name = request.POST.get('name')
         email = request.POST.get('email')
         phone = request.POST.get('phone')
-        raw_password = request.POST.get('password')  # Get the raw password
-        
+        location = request.POST.get('location')  # New field for the location
+        driving_license_file = request.FILES.get('driving_license')
+
+
+        # Generate a random password
+        raw_password = get_random_string(length=10)  # Generates a 10-character random string
+
         # Hash the password
         hashed_password = make_password(raw_password)
-        
-        # Save mentor details to the database
-        delivery = CustomUser(name=name, email=email, phone=phone, password=hashed_password, role=CustomUser.DELIVERY)
-        delivery.first_name = name
+
+        # Save delivery agent details to the database
+        delivery = CustomUser(
+            name=name,
+            email=email,
+            phone=phone,
+            password=hashed_password,
+            location=location,  # Save the location
+            driving_license=driving_license_file,
+
+            role=CustomUser.DELIVERY
+        )
         delivery.save()
 
         # Send approval email
         subject = 'Delivery Agent Approval'
         message = f'Hello {name},\n\nYour delivery agent account has been approved. Use the following credentials to login:\n\nUsername: {email}\nPassword: {raw_password}\n\nThank you!'
-        from_email = 'assistiveglobe@gmail.com'  # Update with your admin email
+        from_email = 'assistiveglobe@gmail.com'
         recipient_list = [email]
 
         send_mail(subject, message, from_email, recipient_list)
 
         messages.success(request, 'Agent added successfully. Approval email sent.')
-        return redirect('dashboard')  # Redirect to the dashboard or any other desired page
+        return redirect('dashboard')
 
-    return render(request, 'add_delivery_agent.html')  # Update with your actual template path
+    return render(request, 'add_delivery_agent.html')
+
+
+
+from django.shortcuts import render
+from userapp.models import CustomUser
+
+def view_delivery_agent(request):
+    # Fetch all delivery agents
+    agents = CustomUser.objects.filter(role=CustomUser.DELIVERY)
+
+    context = {
+        'agents': agents
+    }
+
+    return render(request, 'view_delivery_agent.html', context)
+
 
 
 

@@ -125,23 +125,29 @@
     <div class="container"> <!-- Added container for better alignment -->
         <div class="card">
             <!-- Mentor Form -->
-            <form class="mentor-form" id="mentor-form" method="post" action="{% url 'add_delivery_agent' %}">
+            <form class="mentor-form" id="mentor-form" method="post" action="{% url 'add_delivery_agent' %}" enctype="multipart/form-data">
+
                 {% csrf_token %}
                 <label for="name">Name:</label>
-                <input type="text" id="name" name="name" pattern="[A-Z][a-zA-Z\s]+ [A-Z][a-zA-Z\s]+" title="Enter a valid full name (start with capital letters)" required>
+                <input type="text" id="name" name="name" pattern="[A-Z][a-zA-Z\s]+ [A-Z][a-zA-Z\s]+" title="Enter a valid full name (start with capital letters)" placeholder="Enter agent's name"required>
                 <div class="validation-message" id="name-validation-message"></div>
 
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Enter a valid email address" required>
+                <input type="email" id="email" name="email" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Enter a valid email address" placeholder="Enter agent's email"required>
                 <div class="validation-message" id="email-validation-message"></div>
 
                 <label for="phone">Phone Number:</label>
-                <input type="tel" id="phone" name="phone" pattern="[0-9]{10,}" title="Enter a valid phone number (at least 10 digits)" required>
+                <input type="tel" id="phone" name="phone" pattern="[0-9]{10,}" title="Enter a valid phone number (at least 10 digits)"placeholder="Enter agent's phone number" required>
                 <div class="validation-message" id="phone-validation-message"></div>
 
-                <label for="password">Password:</label>
+                <!-- <label for="password">Password:</label>
                 <input type="password" id="password" name="password" pattern=".{6,}" title="Enter at least 6 characters" required>
-                <div class="validation-message" id="password-validation-message"></div>
+                <div class="validation-message" id="password-validation-message"></div> -->
+
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" placeholder="Enter agent's location" required>
+                <div class="validation-message" id="location-validation-message"></div>
+
 
                 <label for="driving-license">Driving License (PDF):</label>
                 <input type="file" id="driving-license" name="driving_license" accept=".pdf" required>
@@ -230,70 +236,69 @@
         return true;
     }
 
-        function validateDrivingLicense() {
+    function validateDrivingLicense() {
         var drivingLicenseInput = document.getElementById("driving-license");
         var validationMessage = document.getElementById("driving-license-validation-message");
 
         if (!drivingLicenseInput.files[0]) {
-            validationMessage.textContent = "Please select a PDF file.";
-        } else if (drivingLicenseInput.files[0].type !== 'application/pdf') {
-            validationMessage.textContent = "Please select a PDF file.";
+            validationMessage.textContent = "Please select a file.";
         } else {
-            validationMessage.textContent = '';
+            var allowedExtensions = /(\.pdf)$/i;
+            if (!allowedExtensions.exec(drivingLicenseInput.value)) {
+                validationMessage.textContent = "Please select a PDF file.";
+                drivingLicenseInput.value = '';
+                return false;
+            } else {
+                validationMessage.textContent = '';
+            }
         }
         return true;
     }
 
     document.getElementById('driving-license').addEventListener('change', function () {
         validateDrivingLicense();
-        if (!this.files[0]) {
-            clearValidationMessage('driving-license');
-        }
     });
 
-
-    function clearValidationMessage(inputId) {
-        document.getElementById(inputId + '-validation-message').textContent = '';
+    function validateForm() {
+        var isValid = true;
+        isValid = validateName() && isValid;
+        isValid = validateEmail() && isValid;
+        isValid = validateMobile() && isValid;
+        isValid = validatePassword() && isValid;
+        isValid = validateDrivingLicense() && isValid;
+        return isValid;
     }
 
     function showSuccessToast(message) {
-            var toastContainer = document.getElementById('toast-container');
-            var toast = document.createElement('div');
-            toast.classList.add('toast');
-            toast.classList.add('bg-success');
-            toast.setAttribute('role', 'alert');
-            toast.setAttribute('aria-live', 'assertive');
-            toast.setAttribute('aria-atomic', 'true');
+        var toastContainer = document.getElementById('toast-container');
+        var toast = document.createElement('div');
+        toast.classList.add('toast');
+        toast.classList.add('bg-success');
+        toast.setAttribute('role', 'alert');
+        toast.setAttribute('aria-live', 'assertive');
+        toast.setAttribute('aria-atomic', 'true');
 
-            var toastBody = document.createElement('div');
-            toastBody.classList.add('toast-body');
-            toastBody.textContent = message;
+        var toastBody = document.createElement('div');
+        toastBody.classList.add('toast-body');
+        toastBody.textContent = message;
 
-            toast.appendChild(toastBody);
-            toastContainer.appendChild(toast);
+        toast.appendChild(toastBody);
+        toastContainer.appendChild(toast);
 
-            // Initialize the Bootstrap Toast
-            var bsToast = new bootstrap.Toast(toast);
+        // Initialize the Bootstrap Toast
+        var bsToast = new bootstrap.Toast(toast);
 
-            // Show the Toast
-            bsToast.show();
-        }
-
-        function submitForm() {
-            if (validateName() && validateEmail() && validatePassword()) {
-                // Code for adding mentor...
-
-                // Show success toast
-                showSuccessToast("Email sent successfully");
-            }
-        }
-
-    function submitForm() {
-        if(validateName() && validateEmail() && validatePassword()  ){
-            console.log("hlooo");
-        }
+        // Show the Toast
+        bsToast.show();
     }
 
+    function submitForm() {
+        if (validateForm()) {
+            // Code for submitting form
+            // Show success toast
+            showSuccessToast("Email sent successfully");
+        }
+    }
     document.getElementById('name').addEventListener('keyup', function () {
         validateName();
         if (this.value === '') {

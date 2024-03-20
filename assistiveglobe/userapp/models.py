@@ -57,7 +57,10 @@ class CustomUser(AbstractUser):
     is_blocked = models.BooleanField(default=False)
     
 
-   
+    location = models.CharField(max_length=255, blank=True, null=True)  # Field to store the location
+    driving_license = models.FileField(upload_to='driving_licenses/', blank=True, null=True)  # Field to store the driving license PDF
+
+
 
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
