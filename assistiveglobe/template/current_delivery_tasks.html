@@ -1,0 +1,216 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Delivery Tasks - AssistiveGlobe</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-image: url('{% static "images/delivery.jpg" %}');
+            background-size: cover;
+            background-position: center;
+        }
+
+        nav {
+            background-color: #1e88e5;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .site-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .site-name:hover {
+            color: #e0e0e0;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            margin-left: auto;
+        }
+
+        li {
+            margin: 0 15px;
+        }
+
+        a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #e0e0e0;
+        }
+
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            overflow: hidden;
+            max-width: 800px;
+            padding: 20px;
+        }
+
+        .section h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #1e88e5;
+            font-weight: bold;
+        }
+
+        .section-content {
+            padding: 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tbody tr:hover {
+            background-color: #f2f2f2;
+        }
+
+        .order-accepted {
+            background-color: #28a745;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        footer {
+            background-color: #1e88e5;
+            color: #fff;
+            text-align: center;
+            padding: 15px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="{% url 'deliveryagent' %}" class="site-name">AssistiveGlobe</a>
+        <ul>
+            <li><a href="#">Welcome, {{ user.name }} (Delivery Boy)</a></li>
+            <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Current Delivery Tasks Section -->
+    <div class="section">
+        <div class="section-content">
+            <h2>Current Delivery Tasks</h2>
+            {% if delivery_tasks %}
+                <ul>
+                    {% for task in delivery_tasks %}
+                        <li>{{ task.title }} - {{ task.description }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <!-- <p>No current delivery tasks available.</p> -->
+            {% endif %}
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>SI.No</th>
+                        <th>Shipping Address</th>
+                        <th>Product</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order_item in order_items %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>
+                                <strong>Name:</strong> {{ order_item.order.user.shipping_addresses.first.name }} <br>
+                                <strong>Address:</strong> {{ order_item.order.user.shipping_addresses.first.address }} <br>
+                                <strong>Phone:</strong> {{ order_item.order.user.shipping_addresses.first.phone }} <br>
+                                <strong>City:</strong> {{ order_item.order.user.shipping_addresses.first.city }},
+                                <strong>State:</strong> {{ order_item.order.user.shipping_addresses.first.state }} <br>
+                                <strong>Zipcode:</strong> {{ order_item.order.user.shipping_addresses.first.zipcode }}
+                            </td>
+                            <td>{{ order_item.product.name }}</td>
+                            <td>
+                                {% if order_item.accepted_by_delivery_person %}
+                                    <div class="order-accepted">Order Accepted</div>
+                                {% else %}
+                                    <form action="{% url 'accept_order' %}" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="order_item_id" value="{{ order_item.id }}">
+                                        <input type="hidden" name="delivery_boy_id" value="{{ delivery_boy_id }}">
+                                        <button type="submit" class="btn">Accept Order</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        &copy; AssistiveGlobe 2023
+    </footer>
+</body>
+
+</html>

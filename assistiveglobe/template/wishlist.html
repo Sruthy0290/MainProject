@@ -1,70 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Custom styles for the wishlist page */
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
 
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-{% block content %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="{% url 'home' %}">Home</a>
-    <a class="navbar-brand" href="{% url 'product' %}">Product</a>
-    <a class="navbar-brand" href="{% url 'cart' %}">Cart</a>
-    <a class="navbar-brand" href="{% url 'wishlist' %}">Wishlist</a>
-</nav>
+        .card-header {
+            border-radius: 10px 10px 0 0;
+        }
 
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-8 mx-auto">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h2 class="mb-0">Your Wishlist</h2>
-                    </div>
-                    <div class="card-body">
-                        {% if wishlist_items %}
-                            <ul class="list-group">
-                                {% for item in wishlist_items %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div class="d-flex align-items-center">
-                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="mr-3" style="max-height: 50px;">
-                                            {{ item.product.name }}
-                                        </div>
-                                        <span class="badge badge-primary badge-pill">Rs {{ item.product.price|floatformat:2 }}</span>
-                                        <button type="button" class="btn btn-danger btn-sm remove-button" data-product-id="{{ item.product.id }}">Remove</button>
+        .card-body {
+            border-radius: 0 0 10px 10px;
+        }
+        .navbar .navbar-nav .nav-link {
+            color: white; /* Set text color to white */
+        }
 
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <p class="text-center">Your wishlist is empty.</p>
-                        {% endif %}
-                    </div>
+        .navbar .navbar-nav .nav-link:hover {
+            color: white; /* Set hover text color to white */
+        }
+
+        .navbar .navbar-nav .dropdown-menu .dropdown-item {
+            color: black; /* Set dropdown item text color */
+        }
+
+        .navbar .navbar-nav .dropdown-menu .dropdown-item:hover {
+            color: white; /* Set dropdown item hover text color */
+        }
+
+
+        .list-group-item {
+            border: none;
+        }
+
+        .list-group-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .remove-button {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .remove-button:hover {
+            transform: scale(1.1);
+        }
+        .logout-btn {
+            background-color: #f8f7f4; /* Set background color to yellow */
+            border-color: #f5f4f0; /* Set border color to yellow */
+            color: rgb(10, 10, 10); /* Set text color to white */
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .logout-btn:hover {
+            background-color: #f9f8f6; /* Darken the background color on hover */
+            border-color: #fafaf8; /* Darken the border color on hover */
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="{% url 'home' %}">Home</a>
+        <a class="navbar-brand" href="{% url 'product' %}">Product</a>
+        <a class="navbar-brand" href="{% url 'cart' %}">Cart</a>
+        <ul class="navbar-nav ml-auto">
+            <a class="nav-link" href="#">Welcome, {{ user.name }}</a>
+            <a href="{% url 'logout' %}" class="btn btn-warning mx-2 logout-btn">Logout</a>
+        </ul>
+    </nav>
+    
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Your Wishlist</h2>
+                </div>
+                <div class="card-body">
+                    {% if wishlist_items %}
+                        <ul class="list-group">
+                            {% for item in wishlist_items %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="mr-3" style="max-height: 50px;">
+                                        <span>{{ item.product.name }}</span>
+                                    </div>
+                                    <span class="badge badge-primary badge-pill">Rs {{ item.product.price|floatformat:2 }}</span>
+                                    <form class="add-to-cart-form" method="POST" action="{% url 'add_to_cart' item.product.id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-success btn-sm ml-3 add-to-cart-button">Add to Cart</button>
+                                    </form>
+                                    
+                                    <button type="button" class="btn btn-danger btn-sm ml-3 remove-button" data-product-id="{{ item.product.id }}">Remove</button>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-center">Your wishlist is empty.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const removeButtons = document.querySelectorAll('.remove-button');
-            removeButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const productId = this.dataset.productId;
-                    removeProductFromWishlist(productId);
-                });
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const removeButtons = document.querySelectorAll('.remove-button');
+        removeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.dataset.productId;
+                removeProductFromWishlist(productId);
             });
-
-            function removeProductFromWishlist(productId) {
-                fetch(`/remove_from_wishlist/${productId}/`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            window.location.reload(); // Reload the page after successful removal
-                        } else {
-                            console.error('Error removing product from wishlist:', data.error);
-                        }
-                    })
-                    .catch(error => console.error('Error removing product from wishlist:', error));
-            }
         });
-    </script>
-{% endblock %}
 
+        
+        function removeProductFromWishlist(productId) {
+            // Simulate removal action for demonstration purpose
+            console.log('Removing product with ID:', productId);
+        }
+
+       
+    });
+</script>
+
+</body>
+</html>

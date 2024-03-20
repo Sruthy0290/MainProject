@@ -1,14 +1,14 @@
 from django.shortcuts import render,redirect
-from .models import CustomUser
+from userapp.models import CustomUser
 from django.contrib.auth import authenticate,login as auth_login,logout as auth_logout
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import render, get_object_or_404
-from .models import *
+from userapp.models import *
 from django.contrib.auth.decorators import login_required
-from .models import Order
-from .models import  Product
+from userapp.models import Order
+from userapp.models import  Product
 from django.shortcuts import render
 from assistiveglobe.forms import ProductForm,ProductUpdateForm
 from django.shortcuts import get_object_or_404, redirect
@@ -60,8 +60,8 @@ def login(request):
             return redirect('http://127.0.0.1:8000/')
         elif request.user.role == CustomUser.MENTOR:
             return redirect('mentor1')
-        # elif request.user.role == CustomUser.ADMIN:
-        #     return redirect(reverse('dashboard'))
+        elif request.user.role == CustomUser.DELIVERY:
+            return redirect('deliveryagent')
         else:
             return redirect('http://127.0.0.1:8000/')
     elif request.method == 'POST':
@@ -77,8 +77,8 @@ def login(request):
                 auth_login(request, user)
                 if user.role == CustomUser.MENTOR:
                     return redirect('mentor1')  # Redirect to the mentor1 page
-                # elif user.role == CustomUser.ADMIN:
-                #     return redirect(reverse('dashboard'))
+                elif user.role == CustomUser.DELIVERY:
+                    return redirect('deliveryagent')
                 else:
                     return redirect('/')
             else:
@@ -140,36 +140,8 @@ def crutches(request):
     products = Product.objects.filter(category='Crutches')
     return render(request, 'product.html', {'sorted_products': {'Crutches': products}})
 
-# def wishlist(request):
-#     # Logic to retrieve user's wishlist items goes here
-#     wishlist_items = []  # Placeholder for wishlist items
-    
-#     context = {
-#         'wishlist_items': wishlist_items,
-#     }
-    
-#     return render(request, 'wishlist.html', context)
 
-# views.py
-
-# from django.http import JsonResponse
-# from django.views import View
-# from .models import WishlistItem
-
-# class WishlistView(View):
-#     def post(self, request):
-#         product_id = request.POST.get('product_id')
-#         action = request.POST.get('action')
-
-#         # Add or remove item from wishlist based on action
-#         if action == 'add':
-#             WishlistItem.objects.create(user=request.user, product_id=product_id)
-#         elif action == 'remove':
-#             WishlistItem.objects.filter(user=request.user, product_id=product_id).delete()
-
-#         return JsonResponse({'message': 'Item updated successfully'})
-
-
+#
 def dashboard(request):
     total_revenue = Order.objects.filter(complete=True).aggregate(total_revenue=models.Sum('product__price'))['total_revenue']
     total_orders = Order.objects.filter(complete=True).count()
@@ -207,6 +179,7 @@ def block_user(request, user_id):
         user.is_blocked = not user.is_blocked
         user.save()
     return redirect('user_detail')  # Assuming you have a URL named 'user_details'
+    
 
 def custom_login(request):
     if request.method == "POST":
@@ -242,34 +215,52 @@ def admin_product(request):
 
 
 
-
+from userapp.models import Product, Review
 def product_detail(request, product_id):
     product = Product.objects.get(pk=product_id)
-    return render(request, 'product_detail.html', {'product': product})
+    reviews = Review.objects.filter(product=product)
+    return render(request, 'product_detail.html', {'product': product, 'reviews': reviews})
 
 
 
-
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect
+from userapp.models import Product, CartItem
 
 @login_required
 def add_to_cart(request, product_id):
     quantity = int(request.POST.get('quantity', 1))  # Get the selected quantity or default to 1
     product = get_object_or_404(Product, id=product_id)
     user = request.user
-    cart_item = CartItem.objects.filter(product_id=product_id, user_id=user.id).first()
- 
-    if cart_item:
-        cart_item.quantity += quantity
-        cart_item.save()
+
+    # Check if the requested quantity exceeds the available stock
+    if quantity > product.stock:
+        messages.error(request, f'Sorry, only {product.stock} items are available.')
     else:
-        cartItem = CartItem(
-            product_id=product_id,
-            user_id=user.id,
-            quantity=quantity
-        )
-        cartItem.save()
+        # Check if the product is already in the cart
+        cart_item = CartItem.objects.filter(product_id=product_id, user_id=user.id).first()
+        
+        # If the product is already in the cart, update the quantity
+        if cart_item:
+            new_quantity = cart_item.quantity + quantity
+            # Check if the new quantity exceeds the available stock
+            if new_quantity > product.stock:
+                messages.error(request, f'Sorry, only {product.stock} items are available.')
+            else:
+                cart_item.quantity = new_quantity
+                cart_item.save()
+                messages.success(request, 'Product quantity updated in cart.')
+        else:
+            # If the product is not in the cart, create a new cart item
+            cart_item = CartItem.objects.create(
+                product_id=product_id,
+                user_id=user.id,
+                quantity=quantity
+            )
+            messages.success(request, 'Product added to cart successfully.')
 
     return redirect('cart')
+
 
 
 @login_required
@@ -292,9 +283,7 @@ def cart(request):
 
 
 
-
 from django.shortcuts import get_object_or_404, redirect
-
 def remove_from_cart(request, cart_id):
     cart_item = get_object_or_404(CartItem, id=cart_id)
     cart_item.delete()
@@ -302,7 +291,6 @@ def remove_from_cart(request, cart_id):
 
 
 from django.http import JsonResponse
-
 def update_cart_quantity(request, cart_id):
     cart_item = get_object_or_404(CartItem, id=cart_id)
     new_quantity = request.POST.get('quantity')
@@ -321,40 +309,93 @@ def update_cart_quantity(request, cart_id):
 
 
 
-from userapp.models import CustomUser
+# from userapp.models import CustomUser
+# from django.shortcuts import render, redirect
+# from userapp.models import ShippingAddress
+
+# def checkout_view(request):
+#     name = ""
+#     phone = ""
+#     district = ""
+
+#     if request.method == 'POST':
+#         # Assuming you have a form for the new address
+#         form = checkout(request.POST)
+
+#         if form.is_valid():
+#             new_address = form.save(commit=False)
+#             new_address.user = request.user
+#             new_address.save()
+            
+
+#             # Update saved_address and related fields
+#             name = new_address.name
+#             phone = new_address.phone
+#             district = new_address.district
+#     else:
+#         form = checkout()
+
+#     context = {
+#         'name': name,
+#         'phone': phone,
+#         'district': district,
+#         'form': form,
+#     }
+
+#     return render(request, 'checkout.html', context)
+
+
 from django.shortcuts import render, redirect
 from userapp.models import ShippingAddress
 
+from django.shortcuts import render, redirect
+from userapp.models import ShippingAddress
 
-def checkout_view(request):
+def checkout_view(request,amt):
     name = ""
     phone = ""
     district = ""
+    amt = 0  # Assuming amt is initialized with a default value
 
     if request.method == 'POST':
-        # Assuming you have a form for the new address
-        form = checkout(request.POST)
+        # Get the values from the HTML form fields
+        name = request.POST.get('name', '')
+        address = request.POST.get('address', '')
+        phone = request.POST.get('phone', '')
+        city = request.POST.get('city', '')
+        zipcode = request.POST.get('zipcode', '')
+        state = request.POST.get('state', '')
+        landmark = request.POST.get('landmark', '')
 
-        if form.is_valid():
-            new_address = form.save(commit=False)
-            new_address.user = request.user
-            new_address.save()
+        # Save the shipping address
+        new_address = ShippingAddress.objects.create(
+            user=request.user,
+            name=name,
+            address=address,
+            phone=phone,
+            city=city,
+            zipcode=zipcode,
+            state=state,
+            landmark=landmark
+        )
 
-            # Update saved_address and related fields
-            name = new_address.name
-            phone = new_address.phone
-            district = new_address.district
-    else:
-        form = checkout()
+        # Update saved_address and related fields
+        name = new_address.name
+        phone = new_address.phone
+        district = new_address.district
 
+        # Fetch the amt value from wherever it's supposed to come from
+        amt = amt  # Replace this with your actual logic to determine amt
+        return redirect('checkout', amt=amt)
+    
     context = {
         'name': name,
         'phone': phone,
         'district': district,
-        'form': form,
     }
 
     return render(request, 'checkout.html', context)
+
 
 def checkout(request, amt):
     saved_address = None
@@ -405,6 +446,7 @@ def edit_address(request):
         'form': form,
     }
     return render(request, 'edit_address.html', context)
+
 
 # admin
 def add_product(request):
@@ -637,6 +679,7 @@ def product_search(request):
     }
     
     return render(request, 'product_search.html', context)
+
 
 from django.shortcuts import render
 from userapp.models import Order,Product
@@ -1065,7 +1108,7 @@ from django.shortcuts import render, redirect
 from django.core.mail import send_mail
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password  # Import Django's password hashing function
-from .models import CustomUser
+from userapp.models import CustomUser
 
 def add_delivery_agent(request):
     if request.method == 'POST':
@@ -1095,3 +1138,104 @@ def add_delivery_agent(request):
         return redirect('dashboard')  # Redirect to the dashboard or any other desired page
 
     return render(request, 'add_delivery_agent.html')  # Update with your actual template path
+
+
+
+
+from django.shortcuts import render, redirect
+from userapp.models import Product, Review
+from django.contrib import messages
+
+def add_review(request):
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        product = Product.objects.get(pk=product_id)
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
+        user = request.user
+        
+        # Check if the user has already reviewed the product
+        existing_review = Review.objects.filter(user=user, product=product).first()
+        if existing_review:
+            messages.warning(request, 'You have already reviewed this product.')
+        else:
+            # Create and save the new review
+            review = Review.objects.create(user=user, product=product, rating=rating, comment=comment)
+            messages.success(request, 'Your review has been submitted successfully.')
+    
+    return redirect('product_detail', product_id=product_id)
+
+
+
+
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def deliveryagent(request):
+    delivery_name = request.user.username  
+    delivery_email = request.user.email  
+    delivery_phone = request.user.phone  
+
+    return render(request, 'deliveryagent.html', {
+        'delivery_name': delivery_name,
+        'delivery_email': delivery_email,
+        'delivery_phone': delivery_phone,
+    })
+
+
+
+from django.shortcuts import render
+from userapp.models import OrderItem
+
+def view_orders(request):
+    # Get all order items
+    order_items = OrderItem.objects.all()
+
+    return render(request, 'view_orders.html', {'order_items': order_items})
+
+
+
+from django.shortcuts import render
+from userapp.models import OrderItem
+
+def current_delivery_tasks(request):
+    # Get all order items
+    order_items = OrderItem.objects.all()
+
+    return render(request, 'current_delivery_tasks.html', {'order_items': order_items})
+
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from userapp.models import OrderItem, Delivery  # Import the Delivery model
+from datetime import datetime
+
+def accept_order(request):
+    if request.method == 'POST':
+        order_item_id = request.POST.get('order_item_id')
+        try:
+            order_item = OrderItem.objects.get(id=order_item_id)
+            # Check if the order is already accepted
+            if not order_item.accepted_by_delivery_person:
+                # Logic to mark the order as accepted by the delivery person
+                order_item.accepted_by_delivery_person = True
+                order_item.save()
+
+                # Create a new Delivery instance
+                delivery = Delivery.objects.create(
+                    delivery=request.user,  # Assuming request.user is the delivery person
+                    shippingaddress=order_item.order.user.shipping_addresses.first(),
+                    order=order_item,
+                    delivered_at=datetime.now(),
+                    status=True
+                )
+
+                messages.success(request, 'Order accepted successfully.')
+            else:
+                messages.warning(request, 'Order already accepted.')
+        except OrderItem.DoesNotExist:
+            messages.error(request, 'Order item does not exist.')
+
+    return redirect('current_delivery_tasks')

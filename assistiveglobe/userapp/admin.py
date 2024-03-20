@@ -6,6 +6,8 @@ from .models import Order
 from .models import OrderItem
 from .models import ShippingAddress
 from .models import CartItem,Appointment
+from .models import Review
+from .models import Delivery
 
 # Register your models here.
 # admin.site.register(Category)
@@ -16,3 +18,5 @@ admin.site.register(OrderItem)
 admin.site.register(ShippingAddress)
 admin.site.register(CartItem)
 admin.site.register(Appointment)
+admin.site.register(Review)
+admin.site.register(Delivery)

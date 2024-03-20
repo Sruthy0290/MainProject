@@ -1,0 +1,156 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Boy - AssistiveGlobe</title>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-image: url('{% static "images/deliverybg.jpg" %}'); /* Change the image path */
+            background-size: cover;
+            background-position: center;
+        }
+
+
+        nav {
+            background-color: #1e88e5;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .site-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            margin-left: auto;
+        }
+
+        li {
+            margin: 0 15px;
+        }
+
+        a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #e0e0e0;
+        }
+
+        /* Updated Section Styles */
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 10px auto; /* Center the section */
+            overflow: hidden; /* Ensure rounded corners apply properly */
+            max-width: 600px; /* Reduce width */
+        }
+
+        .section-content {
+            padding: 15px; /* Reduce padding */
+        }
+
+        .section h2 {
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: #1e88e5;
+            font-weight: bold;
+        }
+
+        .section p {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.6;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+
+        footer {
+            background-color: #1e88e5;
+            color: #fff;
+            text-align: center;
+            padding: 15px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="site-name">AssistiveGlobe</div>
+        <ul>
+            <li><a href="#">Welcome, {{ user.name }} (Delivery Boy)</a></li>
+            <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Welcome Section -->
+    <div class="section">
+        <div class="section-content">
+            <h2>Welcome, {{ user.name }}</h2>
+            <p>Thank you for being part of AssistiveGlobe. Manage your delivery tasks and make a positive impact on our customers.</p>
+        </div>
+    </div>
+
+   
+    <!-- Current Delivery Tasks Section -->
+    <div class="section">
+        <div class="section-content">
+            <h2>Current Delivery Tasks</h2>
+            <a href="{% url 'current_delivery_tasks' %}" class="btn btn-primary">Click to View Current Delivery Tasks</a>
+        </div>
+    </div>
+    
+
+    <!-- Completed Delivery Tasks Section -->
+    <div class="section">
+        <div class="section-content">
+            <h2>Completed Delivery Tasks</h2>
+            <p>No completed delivery tasks available.</p>
+        </div>
+    </div>
+
+    <footer>
+        &copy; AssistiveGlobe 2023
+    </footer>
+</body>
+
+</html>

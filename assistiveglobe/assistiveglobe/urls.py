@@ -50,6 +50,7 @@ urlpatterns = [
     path('update_cart_quantity/<int:cart_id>/', v.update_cart_quantity, name='update_cart_quantity'),
     path('checkout/<int:amt>/', v.checkout, name='checkout'),
     path('checkout/new/', v.checkout_view, name='checkout_new'),
+
     path('edit_address/', v.edit_address, name='edit_address'),
     path('dashboard/',v.dashboard,name='dashboard'),
     path('user_detail/',v.user_detail, name='user_detail'),
@@ -65,6 +66,7 @@ urlpatterns = [
     path('crutches/', v.crutches, name='crutches'),
     path('stock/',v.stock,name='stock'),
     path('update_stock/<int:product_id>/', v.update_stock, name='update_stock'),
+    path('add_review/',v.add_review,name='add_review'),
 
     path('paymenthandler/<int:amount>', v.paymenthandler, name='paymenthandler'),
     path('payment/<int:amt>',v.payment,name="payment"),
@@ -96,6 +98,11 @@ urlpatterns = [
     
     
     path('add_delivery_agent/', v.add_delivery_agent, name='add_delivery_agent'),
+    path('deliveryagent/', v.deliveryagent, name='deliveryagent'),
+    path('view_orders/', v.view_orders, name='view_orders'),
+    path('current_delivery_tasks/', v.current_delivery_tasks, name='current_delivery_tasks'),
+    path('accept_order/', v.accept_order, name='accept_order'),
+
 
 
 

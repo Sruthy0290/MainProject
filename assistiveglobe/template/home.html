@@ -150,7 +150,7 @@
                         </ul>
                     </li>
                     {%  elif  user.is_authenticated %}
-
+    
                     <li class="nav-item"><a class="nav-link" href="{% url 'product' %}">Products</a></li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop By Category</a>
@@ -171,9 +171,8 @@
                         </ul>
                     </li>
                     {% else %}
-                    <li class="nav-item"><a class="nav-link">Welcome Guest</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">SignUp</a></li>
+                        <li class="nav-item"><a class="nav-link">Welcome Guest</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Sign In\Sign Up</a></li>
                     {% endif %}
                 </ul>
             </div>

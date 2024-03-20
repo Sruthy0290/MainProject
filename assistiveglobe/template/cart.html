@@ -142,9 +142,6 @@
         </div>
     </nav>
 
-    
-
-    
     <div class="container mt-4">
         <a href="{% url 'product' %}" class="btn btn-link"><i class="fas fa-arrow-left icon"></i> Continue Shopping</a>        
         {% if cart_items %}
@@ -173,13 +170,14 @@
                         <td>Rs.{{ item.product.price|floatformat:2 }}</td>
                         <td>
                             <div class="quantity">
-                                <button class="change-quantity" data-cart_id="{{ item.id }}"
-                                    data-change="decrease">-</button>
-                                <input type="number" value="{{ item.quantity }}" min="1" name="quantity_{{ item.id }}"
-                                    id="quantity_{{ item.id }}">
-                                <button class="change-quantity" data-cart_id="{{ item.id }}"
-                                    data-change="increase">+</button>
+                                <button class="change-quantity" data-cart_id="{{ item.id }}" data-change="decrease">-</button>
+                                <!-- Update the input field to include the max attribute with the product's stock -->
+                                 <input type="number" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" name="quantity_{{ item.id }}" id="quantity_{{ item.id }}">
+
+                                <!-- Use the stock quantity as the maximum allowed value -->
+                                <button class="change-quantity" data-cart_id="{{ item.id }}" data-change="increase">+</button>
                             </div>
+                            
                         </td>
                         <td class="total" data-cart_id="{{ item.id }}">Rs.{{ item.get_total }}</td>
                         <td>
@@ -193,8 +191,11 @@
                 </tbody>
             </table>
             <div class="text-center">
-                <button id="checkout" class="btn btn-primary checkout-btn">Checkout</button>
+                <a href="{% url 'checkout' amt=total_price|floatformat:0 %}">
+                    <button id="checkout" class="btn btn-primary checkout-btn">Checkout</button>
+                </a>
             </div>
+
         </div>
         {% else %}
         <div class="empty-cart-msg">Cart is empty !!!</div>
@@ -213,95 +214,63 @@
         }
         
         jQuery(document).ready(function ($) {
-            $(document).ready(function () {
+    $(document).ready(function () {
 
-                $('.change-quantity').click(function () {
-                    var cartId = $(this).data('cart_id');
-                    var change = $(this).data('change');
-                    var inputField = $(this).parent().find('input');
-                    var currentValue = parseInt(inputField.val());
+        $('.change-quantity').click(function () {
+            var cartId = $(this).data('cart_id');
+            var change = $(this).data('change');
+            var inputField = $(this).parent().find('input');
+            var currentValue = parseInt(inputField.val());
+            var maxStock = parseInt(inputField.attr('max')); // Get the maximum stock from the input attribute
 
-                    if (change === 'increase') {
-                        inputField.val(currentValue + 1);
-                    } else if (change === 'decrease' && currentValue > 1) {
-                        inputField.val(currentValue - 1);
-                    }
+            if (change === 'increase' && currentValue < maxStock) { // Check if current value is less than max stock
+                inputField.val(currentValue + 1);
+            } else if (change === 'decrease' && currentValue > 1) {
+                inputField.val(currentValue - 1);
+            }
 
-                    $.ajax({
-                        url: '{% url "update_cart_quantity" 0 %}'.replace('0', cartId),
-                        method: 'POST',
-                        data: {
-                            'quantity': inputField.val(),
-                            'csrfmiddlewaretoken': '{{ csrf_token }}'
-                        },
-                        success: function (data) {
-                            if (data.success) {
-                                var newTotal = parseFloat(data.new_total);
-                                $('.total[data-cart_id="' + cartId + '"]').text('Rs.' + newTotal.toFixed(2));
-
-                                // Update the subtotal
-                                var newSubtotal = parseFloat(data.new_subtotal);
-                                $('.sub-total').text('Subtotal: Rs.' + newSubtotal.toFixed(2));
-                                total = newSubtotal.toFixed(2);
-                            }
-                        }
-                    });
-                });
-
-                // Function to handle input field changes
-                $('input[type="number"]').change(function () {
-                    var cartId = $(this).closest('tr').find('.change-quantity').data('cart_id');
-                    var inputField = $(this);
-                    var newValue = parseInt(inputField.val());
-
-                    if (newValue < 1) {
-                        inputField.val(1);
-                        newValue = 1;
-                    }
-
-                    $.ajax({
-                        url: '{% url "update_cart_quantity" 0 %}'.replace('0', cartId),
-                        method: 'POST',
-                        data: {
-                            'quantity': newValue,
-                            'csrfmiddlewaretoken': '{{ csrf_token }}'
-                        },
-                        success: function (data) {
-                            if (data.success) {
-                                var newTotal = parseFloat(data.new_total);
-                                $('.total[data-cart_id="' + cartId + '"]').text('Rs.' + newTotal.toFixed(2));
-
-                                // Update the subtotal
-                                var newSubtotal = parseFloat(data.new_subtotal);
-                                $('.sub-total').text('Subtotal: Rs.' + newSubtotal.toFixed(2));
-                                total = newSubtotal.toFixed(2);
-                            }
-                        }
-                    });
-                });
-                $("#checkout").click(function(){
-            // Get the subtotal text content
-        var subtotalText = document.querySelector('.sub-total').textContent;
-        
-        // Extract the numeric value from the string
-        var total = parseFloat(subtotalText.match(/\d+\.\d+/)[0]);
-        var p_id = document.querySelectorAll('.prodName')
-        var list = ""
-        p_id.forEach(item => {
-            var id = item.getAttribute("data-card-id");
-            list += `&${id}`;
-        })    
-
-        // Now, 'total' contains the total price
-        // var url = "{% url 'checkout' 0 %}".replace("0", total) + list;
-        // window.location.href = url;
-        window.location.href = "{% url 'checkout' 0   %}".replace("0",total) 
-
-        // window.location.href = "{% url 'checkout' 0   %}".replace("0",total);
-        })
-            });
+            updateCart(cartId, inputField.val()); // Call the function to update the cart
         });
-    </script>
+
+        $('input[type="number"]').change(function () {
+            var cartId = $(this).closest('tr').find('.change-quantity').data('cart_id');
+            var inputField = $(this);
+            var newValue = parseInt(inputField.val());
+            var maxStock = parseInt(inputField.attr('max')); // Get the maximum stock from the input attribute
+
+            if (newValue > maxStock) { // Check if new value exceeds max stock
+                inputField.val(maxStock); // Set value to max stock
+                newValue = maxStock;
+            }
+
+            updateCart(cartId, newValue); // Call the function to update the cart
+        });
+
+        // Function to update cart via AJAX
+        function updateCart(cartId, quantity) {
+            $.ajax({
+                url: '{% url "update_cart_quantity" 0 %}'.replace('0', cartId),
+                method: 'POST',
+                data: {
+                    'quantity': quantity,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if (data.success) {
+                        var newTotal = parseFloat(data.new_total);
+                        $('.total[data-cart_id="' + cartId + '"]').text('Rs.' + newTotal.toFixed(2));
+
+                        var newSubtotal = parseFloat(data.new_subtotal);
+                        $('.sub-total').text('Subtotal: Rs.' + newSubtotal.toFixed(2));
+                    }
+                }
+            });
+        }
+    });
+    
+});
+
+</script>
 
 </body>
 
