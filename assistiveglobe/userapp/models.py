@@ -129,6 +129,9 @@ class Order(models.Model):
     complete = models.BooleanField(default=False)
     transaction_id = models.CharField(max_length=100, null=True, blank=True)
     razorpay_order_id = models.CharField(max_length=100, null=True)
+    assigned_delivery_person = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_orders')
+    status = models.CharField(max_length=50, default='Pending')
+    
     
 
 
@@ -159,7 +162,7 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.SET_NULL,null=True)
     quantity = models.IntegerField(default=0, null=True, blank=True)
     date_added = models.DateTimeField(default=timezone.now)
-    accepted_by_delivery_person = models.BooleanField(default=False)
+    # accepted_by_delivery_person = models.BooleanField(default=False)
 
     @property
     def get_total(self):

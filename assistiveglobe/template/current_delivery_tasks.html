@@ -153,27 +153,16 @@
         </ul>
     </nav>
 
-    <!-- Current Delivery Tasks Section -->
     <div class="section">
         <div class="section-content">
             <h2>Current Delivery Tasks</h2>
-            {% if delivery_tasks %}
-                <ul>
-                    {% for task in delivery_tasks %}
-                        <li>{{ task.title }} - {{ task.description }}</li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <!-- <p>No current delivery tasks available.</p> -->
-            {% endif %}
-            
+            <!-- Display the assigned orders -->
             <table>
                 <thead>
                     <tr>
                         <th>SI.No</th>
                         <th>Shipping Address</th>
                         <th>Product</th>
-                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -189,18 +178,6 @@
                                 <strong>Zipcode:</strong> {{ order_item.order.user.shipping_addresses.first.zipcode }}
                             </td>
                             <td>{{ order_item.product.name }}</td>
-                            <td>
-                                {% if order_item.accepted_by_delivery_person %}
-                                    <div class="order-accepted">Order Accepted</div>
-                                {% else %}
-                                    <form action="{% url 'accept_order' %}" method="POST">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="order_item_id" value="{{ order_item.id }}">
-                                        <input type="hidden" name="delivery_boy_id" value="{{ delivery_boy_id }}">
-                                        <button type="submit" class="btn">Accept Order</button>
-                                    </form>
-                                {% endif %}
-                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>

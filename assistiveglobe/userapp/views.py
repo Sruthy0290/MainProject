@@ -543,7 +543,10 @@ def payment(request,amt):
         razorpay_order_id=razorpay_order_id,
         product_id=i.product_id
         )
+        
         order.save()
+        assign_orders(request.user.id,order.id)
+        
     cartitems.delete()
 
 
@@ -563,6 +566,10 @@ def payment(request,amt):
 # we need to csrf_exempt this url as
 # POST request will be made by Razorpay
 # and it won't have the csrf token.
+
+
+from django.core.mail import send_mail
+from userapp.models import Order, CustomUser
 
 @csrf_exempt
 def paymenthandler(request, amount):
@@ -601,12 +608,14 @@ def paymenthandler(request, amount):
                 prod.stock=prod.stock-1
                 prod.save()
 
+
             return redirect('order_history')
         else:
             return render(request, 'paymentfail.html')
 
     else:
         return HttpResponseBadRequest()
+        
 
 
 
@@ -1241,35 +1250,33 @@ def current_delivery_tasks(request):
     return render(request, 'current_delivery_tasks.html', {'order_items': order_items})
 
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from userapp.models import OrderItem, Delivery  # Import the Delivery model
-from datetime import datetime
 
-def accept_order(request):
-    if request.method == 'POST':
-        order_item_id = request.POST.get('order_item_id')
-        try:
-            order_item = OrderItem.objects.get(id=order_item_id)
-            # Check if the order is already accepted
-            if not order_item.accepted_by_delivery_person:
-                # Logic to mark the order as accepted by the delivery person
-                order_item.accepted_by_delivery_person = True
-                order_item.save()
 
-                # Create a new Delivery instance
-                delivery = Delivery.objects.create(
-                    delivery=request.user,  # Assuming request.user is the delivery person
-                    shippingaddress=order_item.order.user.shipping_addresses.first(),
-                    order=order_item,
-                    delivered_at=datetime.now(),
-                    status=True
-                )
+from django.db.models import Min
+from django.core.mail import send_mail
+from .models import Order, CustomUser
 
-                messages.success(request, 'Order accepted successfully.')
-            else:
-                messages.warning(request, 'Order already accepted.')
-        except OrderItem.DoesNotExist:
-            messages.error(request, 'Order item does not exist.')
+def assign_orders(user_id,order_id):
+    order = Order.objects.get(id=order_id)  # Get unassigned orders
+    ship_location=ShippingAddress.objects.get(user_id=user_id)
 
-    return redirect('current_delivery_tasks')
+        # Find the closest available delivery person based on user and delivery person locations
+    agents=CustomUser.objects.filter(role=3)
+    for i in agents:
+        if ship_location.city==i.location:
+            closest_delivery_person=i
+            break
+    if closest_delivery_person:
+        order.assigned_delivery_person = closest_delivery_person
+        order.save()
+            # Notify the assigned delivery person
+        notify_delivery_person(closest_delivery_person, order)
+
+def notify_delivery_person(delivery_person, order):
+    subject = 'New Order Assigned'
+    message = f'Hi {delivery_person.name},\n\nYou have been assigned a new order with ID {order.id}.\n\nThank you.'
+    from_email = 'assistiveglobe@gmail.com'  # Update with your email
+    to_email = delivery_person.email
+    send_mail(subject, message, from_email, [to_email])
+
+

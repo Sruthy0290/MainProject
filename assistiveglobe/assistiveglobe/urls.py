@@ -102,7 +102,8 @@ urlpatterns = [
     path('view_delivery_agent', v.view_delivery_agent, name='view_delivery_agent'),
     path('view_orders/', v.view_orders, name='view_orders'),
     path('current_delivery_tasks/', v.current_delivery_tasks, name='current_delivery_tasks'),
-    path('accept_order/', v.accept_order, name='accept_order'),
+    path('assign_orders/',v.assign_orders, name='assign_orders'),
+    # path('accept_order/', v.accept_order, name='accept_order'),
 
 
 
