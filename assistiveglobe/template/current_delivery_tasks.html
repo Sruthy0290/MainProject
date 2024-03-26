@@ -6,6 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Current Delivery Tasks - AssistiveGlobe</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -104,7 +107,8 @@
             margin-top: 20px;
         }
 
-        th, td {
+        th,
+        td {
             border: 1px solid #ddd;
             padding: 12px;
             text-align: left;
@@ -141,7 +145,29 @@
             bottom: 0;
             width: 100%;
         }
+
+        .alert {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-success {
+            color: #0f5132;
+            background-color: #d1e7dd;
+            border-color: #badbcc;
+        }
+
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
     </style>
+     
 </head>
 
 <body>
@@ -157,15 +183,18 @@
         <div class="section-content">
             <h2>Current Delivery Tasks</h2>
             <!-- Display the assigned orders -->
+            <div id="success-message" style="display: none;">{{ success_message }}</div>
             <table>
                 <thead>
                     <tr>
                         <th>SI.No</th>
                         <th>Shipping Address</th>
                         <th>Product</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
+
                     {% for order_item in order_items %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
@@ -178,6 +207,17 @@
                                 <strong>Zipcode:</strong> {{ order_item.order.user.shipping_addresses.first.zipcode }}
                             </td>
                             <td>{{ order_item.product.name }}</td>
+                            <td>
+                                <form id="update-order-form-{{ order_item.id }}" action="{% url 'update_order_status' order_item.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="order_item_id" value="{{ order_item.id }}">
+                                    <select name="status">
+                                        <option value="out_for_delivery">Out for Delivery</option>
+                                        <option value="delivered">Delivered</option>
+                                    </select>
+                                    <button type="submit" onclick="updateOrderStatus('{{ order_item.id }}')">Update Status</button>
+                                </form> 
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -188,6 +228,48 @@
     <footer>
         &copy; AssistiveGlobe 2023
     </footer>
+    <script>
+        // JavaScript function to handle form submission
+        function updateOrderStatus(orderItemId) {
+            var form = document.getElementById('update-order-form-' + orderItemId);
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent the default form submission
+    
+                // Get the selected status
+                var selectedStatus = form.elements['status'].value;
+    
+                // Create a new FormData object to send form data
+                var formData = new FormData();
+                formData.append('status', selectedStatus);
+                var csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+                formData.append('csrfmiddlewaretoken', csrfToken); // Include CSRF token
+    
+                // Create a new XMLHttpRequest object
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', form.action);
+    
+                // Set up the onload function
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        // If the request is successful, display success message as an alert
+                        var response = JSON.parse(xhr.responseText);
+                        alert(response.success_message);
+    
+                        // Optionally, update the order item HTML in the table
+                        document.getElementById('order-item-' + orderItemId).innerHTML = response.order_item_html;
+                    } else {
+                        // If the request fails, display error message
+                        console.error('Error updating order status:', xhr.status);
+                    }
+                };
+    
+                // Send the request
+                xhr.send(formData);
+            });
+        }
+    </script>
+    
+    
 </body>
 
 </html>

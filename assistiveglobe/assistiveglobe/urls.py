@@ -103,8 +103,7 @@ urlpatterns = [
     path('view_orders/', v.view_orders, name='view_orders'),
     path('current_delivery_tasks/', v.current_delivery_tasks, name='current_delivery_tasks'),
     path('assign_orders/',v.assign_orders, name='assign_orders'),
-    # path('accept_order/', v.accept_order, name='accept_order'),
-
+    path('update_order_status/<int:order_item_id>/', v.update_order_status, name='update_order_status'),
 
 
 

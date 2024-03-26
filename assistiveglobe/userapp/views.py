@@ -693,33 +693,68 @@ def product_search(request):
     return render(request, 'product_search.html', context)
 
 
-from django.shortcuts import render
-from userapp.models import Order,Product
+# from django.shortcuts import render
+# from userapp.models import Order,Product
+# def order_history(request):
+#     if request.user.is_authenticated:
+#         # Filter completed orders for the logged-in user
+#         orders = Order.objects.filter(user=request.user, complete=True)
+
+#         # Initialize an empty dictionary to store order items for each order
+#         order_items_dict = {}
+
+#         # Retrieve associated OrderItems for each order
+#         for order in orders:
+#             order_items = OrderItem.objects.filter(order=order)
+#             order_items_dict[order] = order_items
+
+#     else:
+#         orders = []
+#         order_items_dict = {}
+
+#     context = {
+#         'orders': orders,
+#         'order_items_dict': order_items_dict,  # Pass the dictionary containing order items for each order
+#     }
+#     return render(request, 'order_history.html', context)
+
+
+@login_required
 def order_history(request):
     if request.user.is_authenticated:
         # Filter completed orders for the logged-in user
-        orders = Order.objects.filter(user=request.user, complete=True)
+        orders = Order.objects.filter(user=request.user, complete=True).order_by('-date_ordered')
 
-        # Initialize an empty dictionary to store order items for each order
-        order_items_dict = {}
+        # Initialize a list to store order data
+        order_data = []
 
-        # Retrieve associated OrderItems for each order
+        # Retrieve associated OrderItems and delivery status for each order
         for order in orders:
             order_items = OrderItem.objects.filter(order=order)
-            order_items_dict[order] = order_items
+            order_item_data = []
+            for order_item in order_items:
+                delivery = Delivery.objects.filter(order=order_item).first()
+                delivery_status = delivery.status if delivery else "Not Found"
+                order_item_data.append({
+                    'product': order_item.product,
+                    'delivery_status': delivery_status,
+                    # Add other fields as needed
+                })
+                print(f"Order Item: {order_item}, Delivery Status: {delivery_status}")
+            order_data.append({
+                'order': order,
+                'order_items': order_item_data,
+            })
 
     else:
         orders = []
-        order_items_dict = {}
+        order_data = []
 
     context = {
         'orders': orders,
-        'order_items_dict': order_items_dict,  # Pass the dictionary containing order items for each order
+        'order_data': order_data,
     }
     return render(request, 'order_history.html', context)
-
-
-
 
 
 def process_order(request, product_id, quantity):
@@ -1230,13 +1265,14 @@ def deliveryagent(request):
 
 
 from django.shortcuts import render
-from userapp.models import OrderItem
+from userapp.models import Order
 
 def view_orders(request):
-    # Get all order items
-    order_items = OrderItem.objects.all()
+    # Get all orders
+    orders = Order.objects.all()
 
-    return render(request, 'view_orders.html', {'order_items': order_items})
+    return render(request, 'view_orders.html', {'orders': orders})
+
 
 
 
@@ -1272,11 +1308,64 @@ def assign_orders(user_id,order_id):
             # Notify the assigned delivery person
         notify_delivery_person(closest_delivery_person, order)
 
+
 def notify_delivery_person(delivery_person, order):
     subject = 'New Order Assigned'
     message = f'Hi {delivery_person.name},\n\nYou have been assigned a new order with ID {order.id}.\n\nThank you.'
     from_email = 'assistiveglobe@gmail.com'  # Update with your email
     to_email = delivery_person.email
     send_mail(subject, message, from_email, [to_email])
+
+
+
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from .models import OrderItem
+
+def order_status(request, order_item_id):
+    order_item = get_object_or_404(OrderItem, pk=order_item_id)
+    if order_item.delivery:
+        status = order_item.delivery.status
+    else:
+        status = 'Not Available'
+    return JsonResponse({'status': status})
+
+
+
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from .models import OrderItem
+from django.utils import timezone
+from django.contrib.auth.decorators import login_required
+from django.template.loader import render_to_string
+
+@login_required
+def update_order_status(request, order_item_id):
+    order_item = get_object_or_404(OrderItem, pk=order_item_id)
+    delivery, created = Delivery.objects.get_or_create(order=order_item, defaults={'delivery': request.user})
+    
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        if new_status in ['out_for_delivery', 'delivered']:
+            # Update the delivery status and timestamp
+            delivery.status = new_status
+            delivery.updated_at = timezone.now()
+            delivery.save()
+
+            # Update the product status if order is delivered
+            if new_status == 'delivered':
+                order_item.product.status = 'Delivered'
+                order_item.product.save()
+
+            # Render the updated order item data
+            order_item_html = render_to_string('current_delivery_tasks.html', {'order_item': order_item})
+
+            # Return success message and updated order item HTML
+            return JsonResponse({'success_message': 'Order status updated successfully', 'order_item_html': order_item_html})
+        else:
+            return JsonResponse({'error': 'Invalid status'}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
 
 

@@ -130,7 +130,6 @@ class Order(models.Model):
     transaction_id = models.CharField(max_length=100, null=True, blank=True)
     razorpay_order_id = models.CharField(max_length=100, null=True)
     assigned_delivery_person = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_orders')
-    status = models.CharField(max_length=50, default='Pending')
     
     
 
@@ -156,13 +155,11 @@ class Order(models.Model):
   
 from django.utils import timezone
 
-
 class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     order = models.ForeignKey(Order, on_delete=models.SET_NULL,null=True)
     quantity = models.IntegerField(default=0, null=True, blank=True)
     date_added = models.DateTimeField(default=timezone.now)
-    # accepted_by_delivery_person = models.BooleanField(default=False)
 
     @property
     def get_total(self):
@@ -260,10 +257,16 @@ class Review(models.Model):
         return f"Review by {self.user.username} for {self.product.name}"  
         
 
+from django.db import models
+from django.contrib.auth.models import User
 
 class Delivery(models.Model):
     delivery = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    shippingaddress = models.ForeignKey(ShippingAddress, on_delete=models.CASCADE,null=True)
+    shippingaddress = models.ForeignKey(ShippingAddress, on_delete=models.CASCADE, null=True)
     order = models.ForeignKey(OrderItem, on_delete=models.CASCADE, blank=True, null=True)
-    delivered_at = models.DateTimeField()
-    status = models.BooleanField(default=False)
+    status_choices = [
+        ('out_for_delivery', 'Out for Delivery'),
+        ('delivered', 'Delivered')
+    ]
+    status = models.CharField(max_length=20, choices=status_choices)
+    updated_at = models.DateTimeField(auto_now=True)  # New field to store status update timestamp

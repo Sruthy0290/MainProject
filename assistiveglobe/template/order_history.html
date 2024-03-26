@@ -7,6 +7,7 @@
     <title>Your Order History</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- Custom styles -->
     <style>
         body {
@@ -98,7 +99,8 @@
                                     <!-- <p><strong>Quantity:</strong> {{ order_item.product.quantity}}</p> -->
                                     <p><strong>Price:</strong> Rs.{{ order_item.product.price }}</p>
                                     <p class="card-text"><strong>Payment Status:</strong> {% if order.complete %}<span class="text-success">Paid</span>{% else %}<span class="text-danger">Pending</span>{% endif %}</p>
-                                </div>
+                                    <p class="card-text"><strong>Delivery Status:</strong> {{ order_item.delivery_status }}</p>
+                                 </div>
                             </div>
                             <hr>
                         {% endfor %}
@@ -111,6 +113,7 @@
             </div>
         {% endif %}
     </div>
+    
 
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
