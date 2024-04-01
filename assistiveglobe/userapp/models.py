@@ -270,3 +270,5 @@ class Delivery(models.Model):
     ]
     status = models.CharField(max_length=20, choices=status_choices)
     updated_at = models.DateTimeField(auto_now=True)  # New field to store status update timestamp
+
+
