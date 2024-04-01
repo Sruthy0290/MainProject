@@ -99,7 +99,7 @@
                                     <!-- <p><strong>Quantity:</strong> {{ order_item.product.quantity}}</p> -->
                                     <p><strong>Price:</strong> Rs.{{ order_item.product.price }}</p>
                                     <p class="card-text"><strong>Payment Status:</strong> {% if order.complete %}<span class="text-success">Paid</span>{% else %}<span class="text-danger">Pending</span>{% endif %}</p>
-                                    <p class="card-text"><strong>Delivery Status:</strong> {{ order_item.delivery_status }}</p>
+                                    <p class="card-text"><strong>Delivery Status:</strong> {{ order_item.delivery.status }}</p>
                                  </div>
                             </div>
                             <hr>
